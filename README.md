@@ -23,7 +23,7 @@ Library to integrate [react-intl](https://www.npmjs.com/package/react-intl) with
 $ npm install --save @moxy/next-intl react-intl
 ```
 
-If you are running Node.js < `13.1.0`, you must also install `full-icu` and start node with [`--icu-data-dir=node_modules/full-icu`](https://github.com/zeit/next.js/blob/5e6f79117fae59ec3a6a3260808f611862c53f0a/examples/with-react-intl/package.json#L5).
+If you are running Node.js `< 13.1.0`, you must also install `full-icu` and start node with [`--icu-data-dir=node_modules/full-icu`](https://github.com/zeit/next.js/blob/5e6f79117fae59ec3a6a3260808f611862c53f0a/examples/with-react-intl/package.json#L5).
 
 
 ## Setup
@@ -126,7 +126,7 @@ export default class MyApp extends App {
 
 `<NextIntlScript>` is a React component responsible for conditionally loading [Intl polyfills and locale data](https://github.com/formatjs/react-intl/blob/master/docs/Getting-Started.md#runtime-requirements) if necessary.
 
-Note that must add `<NextIntlScript>` to your Document's render method. Please check the [setup](#setup) guide for more information.
+Note that you must add `<NextIntlScript>` to your Document's render method. Please check the [setup](#setup) guide for more information.
 
 ### &lt;NextIntlProvider&gt;
 
@@ -138,7 +138,7 @@ Available props:
 
 ##### locales
 
-Type: `Array`<br>
+Type: `Array`
 
 The list of supported locales. Each locale is an object with the following shape:
 
@@ -155,13 +155,13 @@ The list of supported locales. Each locale is an object with the following shape
 
 ##### policies
 
-Type: `Array`<br>
+Type: `Array`
 
 The list of [policies](#policies-2) ordered by preference.
 
 ##### initialData
 
-Type: `object`<br>
+Type: `object`
 
 The object returned from the [`getInitialIntlData()`](#getinitialintldata) promise.
 
@@ -228,20 +228,20 @@ Note that you must call `getInitialIntlData()` in your Apps's `getInitialProps()
 
 ##### locales
 
-Type: `Array`<br>
+Type: `Array`
 
 The list of supported locales.
 
 ##### policies
 
-Type: `Array`<br>
+Type: `Array`
 
 The list of [policies](#policies-2) ordered by preference.
 
 
 ##### ctx
 
-Type: `object`<br>
+Type: `object`
 
 The `ctx` property of the first argument of `App.getInitialProps`.
 
@@ -278,7 +278,7 @@ The locale id to use as the default locale.
 
 #### Custom policies
 
-You may want to create a custom policy that suits a certain use-case. One common example is to have a policy that matches against the locale saved in the account preferences of authenticated users.
+You may want to create custom policies for certain use-cases. One common use-case is to have a policy that matches against the locale saved in the account preferences of authenticated users.
 
 A policy is a simple object that must have a `match` method and optionally a `watch`, `act` and `save` methods. Please check out the built-in [policies](src/policies) to know how to implement one.
 
