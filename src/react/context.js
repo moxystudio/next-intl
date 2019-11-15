@@ -25,6 +25,10 @@ class NextIntlProvider extends PureComponent {
         }
     }
 
+    componentWillUnmount() {
+        this.manager.destroy();
+    }
+
     render() {
         const { locales, children, ...rest } = this.props;
         const { providerValue, intlProps } = this.state;
@@ -42,7 +46,7 @@ class NextIntlProvider extends PureComponent {
         const { locales, policies, initialData } = this.props;
         const data = this.manager ? this.manager.toData() : initialData;
 
-        this.manager.destroy();
+        this.manager?.destroy();
 
         this.manager = createManager(locales, policies, data);
         this.manager.onLocaleChange(() => this.setState(this.buildState()));

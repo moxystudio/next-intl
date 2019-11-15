@@ -5,7 +5,7 @@ import createPGroup from './util/p-group';
 jest.mock('./util/p-group', () => jest.fn(() => ({
     wait: jest.fn(),
     add: jest.fn(),
-    cancel: jest.fn(),
+    reset: jest.fn(),
 })));
 
 const messages = {
@@ -368,7 +368,7 @@ describe('manager', () => {
             const pGroup = createPGroup.mock.results[0].value;
 
             expect(pGroup.add).toHaveBeenCalledTimes(1);
-            expect(pGroup.cancel).toHaveBeenCalledTimes(1);
+            expect(pGroup.reset).toHaveBeenCalledTimes(1);
         });
     });
     describe('toData()', () => {
@@ -445,7 +445,7 @@ describe('manager', () => {
             const pGroup = createPGroup.mock.results[0].value;
 
             expect(pGroup.add).toHaveBeenCalledTimes(2);
-            expect(pGroup.cancel).toHaveBeenCalledTimes(1);
+            expect(pGroup.reset).toHaveBeenCalledTimes(1);
         });
 
         it('should apply the locale on the first policy that has the act() method', async () => {
@@ -462,7 +462,7 @@ describe('manager', () => {
 
             const manager = createManager(locales, policies, initialData);
 
-            policies.forEach((policy) => policy?.act?.mockClear());
+            policies.forEach((policy) => policy.act?.mockClear());
 
             await manager.changeLocale(locales[1].id);
 
@@ -575,7 +575,7 @@ describe('manager', () => {
 
             manager.destroy();
 
-            expect(pGroup.cancel).toHaveBeenCalledTimes(1);
+            expect(pGroup.reset).toHaveBeenCalledTimes(1);
         });
     });
 });

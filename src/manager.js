@@ -91,7 +91,7 @@ const createManager = (locales, policies, initialData) => {
                     return;
                 }
 
-                pGroup.cancel();
+                pGroup.reset();
 
                 messages = await pGroup.add(locale.loadMessages());
                 locale = newLocale;
@@ -135,7 +135,7 @@ const createManager = (locales, policies, initialData) => {
             if (newLocale.id === locale.id) {
                 await pGroup.wait();
             } else {
-                pGroup.cancel();
+                pGroup.reset();
 
                 messages = await pGroup.add(newLocale.loadMessages());
                 locale = newLocale;
@@ -155,7 +155,7 @@ const createManager = (locales, policies, initialData) => {
 
         destroy() {
             changeSignal.clear();
-            pGroup.cancel();
+            pGroup.reset();
             suspendAct && suspendAct();
             suspendWatch && suspendWatch();
         },

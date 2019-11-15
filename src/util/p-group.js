@@ -1,17 +1,15 @@
 import PCancelable from 'p-cancelable';
 
 const createPGroup = () => {
-    const promises = [];
+    let promises = [];
 
     return {
         wait() {
             return Promise.all(promises);
         },
         add: (promise) => {
-            promise = Promise.resolve(promise);
-
-            if (typeof promise.cancel !== 'function') {
-                const originalPromise = promise;
+            if (typeof promise?.cancel !== 'function') {
+                const originalPromise = Promise.resolve(promise);
 
                 promise = new PCancelable((resolve, reject) => originalPromise.then(resolve, reject));
             }
@@ -20,8 +18,9 @@ const createPGroup = () => {
 
             return promise;
         },
-        cancel: () => {
+        reset: () => {
             promises.forEach((promise) => promise.cancel());
+            promises = [];
         },
     };
 };
