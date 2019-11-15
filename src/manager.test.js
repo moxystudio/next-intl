@@ -1,5 +1,12 @@
 import pDelay from 'delay';
 import createManager, { getInitialData } from './manager';
+import createPGroup from './util/p-group';
+
+jest.mock('./util/p-group', () => jest.fn(() => ({
+    wait: jest.fn(),
+    add: jest.fn(),
+    cancel: jest.fn(),
+})));
 
 const messages = {
     'en-US': { apple: 'apple' },
@@ -14,6 +21,7 @@ const locales = [
 ];
 
 afterEach(() => {
+    createPGroup.mockClear();
     locales.forEach((locale) => locale.loadMessages.mockClear());
 });
 
@@ -58,356 +66,516 @@ describe('getInitialData() - SS', () => {
 describe('getInitialData() - CS', () => {
     it('should return undefined', async () => {
         const policies = [
-            { match: jest.fn(() => null) },
-            { match: jest.fn(() => locales[1].id) },
             { match: jest.fn(() => locales[0].id) },
+            { match: jest.fn(() => locales[1].id) },
         ];
 
         const initialData = await getInitialData(locales, policies);
 
-        expect(policies[0].match).toHaveBeenCalledTimes(0);
-        expect(policies[1].match).toHaveBeenCalledTimes(0);
-        expect(policies[2].match).toHaveBeenCalledTimes(0);
-
-        expect(locales[0].loadMessages).toHaveBeenCalledTimes(0);
-        expect(locales[1].loadMessages).toHaveBeenCalledTimes(0);
-        expect(locales[2].loadMessages).toHaveBeenCalledTimes(0);
-
         expect(initialData).toBe(undefined);
+
+        policies.forEach((policy) => expect(policy.match).toHaveBeenCalledTimes(0));
+        locales.forEach((locales) => expect(locales.loadMessages).toHaveBeenCalledTimes(0));
     });
 });
 
-describe('init', () => {
-    it('should iterate all policies, until one matches a locale', () => {
-        const policies = [
-            { match: jest.fn(() => null) },
-            { match: jest.fn(() => locales[1].id) },
-            { match: jest.fn(() => null) },
-        ];
+describe('manager', () => {
+    describe('init', () => {
+        it('should start with the initialData', async () => {
+            const policies = [
+                { match: jest.fn(() => locales[0].id) },
+                { match: jest.fn(() => locales[1].id) },
+            ];
 
-        createManager(locales, policies);
+            const initialData = {
+                localeId: locales[1].id,
+                messages: messages[locales[1].id],
+            };
 
-        expect(policies[0].match).toHaveBeenCalledTimes(1);
-        expect(policies[1].match).toHaveBeenCalledTimes(1);
-        expect(policies[2].match).toHaveBeenCalledTimes(0);
-    });
+            const manager = createManager(locales, policies, initialData);
 
-    it('should throw if none of the policies matched a locale', () => {
-        const policies = [
-            { match: jest.fn(() => null) },
-        ];
+            expect(manager.locale.id).toBe(initialData.localeId);
+            expect(manager.messages).toBe(initialData.messages);
 
-        expect(() => createManager(locales, policies))
-        .toThrow('None of the policies matched a locale.. did you forgot to include the default policy?');
-    });
-
-    it('should return the locale of the policy that mached', () => {
-        const policies = [
-            { match: () => null },
-            { match: () => locales[1].id },
-        ];
-
-        const manager = createManager(locales, policies);
-
-        expect(manager.locale).toBe(locales[1]);
-    });
-
-    it('should fail if a policy matched an unknown locale ', () => {
-        const policies = [
-            { match: () => 'it-IT' },
-        ];
-
-        expect(() => createManager(locales, policies)).toThrow('Unknown locale id: it-IT');
-    });
-
-    it('should assume options.initialLocaleId', () => {
-        const policies = [
-            { match: jest.fn(() => locales[1].id) },
-        ];
-
-        const options = { initialLocaleId: locales[0].id };
-        const manager = createManager(locales, policies, options);
-
-        expect(manager.locale).toBe(locales[0]);
-        expect(policies[0].match).toHaveBeenCalledTimes(0);
-    });
-
-    it('should fail if options.initialLocaleId is an unknown locale ', () => {
-        const policies = [
-            { match: jest.fn(() => locales[0].id) },
-        ];
-
-        const options = { initialLocaleId: 'it-IT' };
-
-        expect(() => createManager(locales, policies, options)).toThrow('Unknown locale id: it-IT');
-    });
-
-    it('should watch all policies', () => {
-        const policies = locales.map(({ id }) => ({
-            match: () => id,
-            watch: jest.fn(() => {}),
-        }));
-
-        createManager(locales, policies);
-
-        policies.forEach((policy) => expect(policy.watch).toHaveBeenCalledTimes(1));
-    });
-
-    it('should apply the locale on the first policy that has the act() method', () => {
-        const policies = [
-            { match: jest.fn(() => null), watch: jest.fn(() => {}) },
-            { match: jest.fn(() => locales[1].id), act: jest.fn(() => {}) },
-            { match: jest.fn(() => null), act: jest.fn(() => {}) },
-        ];
-
-        createManager(locales, policies);
-
-        expect(policies[1].act).toHaveBeenCalledTimes(1);
-        expect(policies[1].act).toHaveBeenCalledWith(locales[1]);
-        expect(policies[2].act).toHaveBeenCalledTimes(0);
-    });
-});
-
-describe('policy invoked watch callback', () => {
-    it('should iterate all policies, until one matches a locale', () => {
-        const policies = [
-            { match: jest.fn(() => null) },
-            { match: jest.fn(() => locales[0].id) },
-            { match: jest.fn(() => null), watch: jest.fn(() => {}) },
-        ];
-
-        createManager(locales, policies);
-
-        const callback = policies[2].watch.mock.calls[0][0];
-
-        policies.forEach(({ match }) => match.mockClear());
-        policies.match = jest.fn(() => locales[1].id);
-        callback(locales[1].id);
-
-        expect(policies[0].match).toHaveBeenCalledTimes(1);
-        expect(policies[1].match).toHaveBeenCalledTimes(1);
-        expect(policies[2].match).toHaveBeenCalledTimes(0);
-    });
-
-    it('should apply the locale on the first policy that has the act() method', () => {
-        const policies = [
-            { match: jest.fn(() => null), watch: jest.fn(() => {}) },
-            { match: jest.fn(() => locales[1].id), act: jest.fn(() => {}) },
-            { match: jest.fn(() => null), act: jest.fn(() => {}) },
-        ];
-
-        createManager(locales, policies);
-
-        policies.forEach((policy) => policy?.act?.mockClear());
-
-        const callback = policies[0].watch.mock.calls[0][0];
-
-        policies[0].match = () => locales[0].id;
-        callback(locales[0].id);
-
-        expect(policies[1].act).toHaveBeenCalledTimes(1);
-        expect(policies[1].act).toHaveBeenCalledWith(locales[0]);
-        expect(policies[2].act).toHaveBeenCalledTimes(0);
-    });
-
-    it('should suspend the previous act()', async () => {
-        const suspendAct = jest.fn();
-
-        const policies = [
-            { match: jest.fn(() => null), watch: jest.fn(() => {}) },
-            { match: jest.fn(() => locales[1].id), act: jest.fn(() => suspendAct) },
-            { match: jest.fn(() => null), act: jest.fn(() => {}) },
-        ];
-
-        createManager(locales, policies);
-
-        const callback = policies[0].watch.mock.calls[0][0];
-
-        policies[0].match = () => locales[0].id;
-        callback(locales[0].id);
-
-        expect(suspendAct).toHaveBeenCalledTimes(1);
-    });
-
-    it('should update current locale', () => {
-        const policies = [
-            { match: () => null, watch: jest.fn(() => {}) },
-            { match: () => locales[1].id },
-        ];
-
-        const manager = createManager(locales, policies);
-
-        const callback = policies[0].watch.mock.calls[0][0];
-
-        policies[0].match = () => locales[0].id;
-        callback(locales[0].id);
-
-        expect(manager.locale).toBe(locales[0]);
-    });
-
-    it('should notify change listeners', () => {
-        const policies = [
-            { match: () => null, watch: jest.fn(() => {}) },
-            { match: () => locales[1].id },
-        ];
-
-        const listener = jest.fn();
-        const manager = createManager(locales, policies);
-
-        manager.onLocaleChange(listener);
-
-        const callback = policies[0].watch.mock.calls[0][0];
-
-        policies[0].match = () => locales[0].id;
-        callback(locales[0].id);
-
-        expect(listener).toHaveBeenCalledTimes(1);
-        expect(listener).toHaveBeenCalledWith(locales[0]);
-    });
-});
-
-describe('changeLocale()', () => {
-    it('should fail if locale is unknown', async () => {
-        const policies = [
-            { match: () => locales[0].id },
-            { match: () => locales[1].id },
-        ];
-
-        const manager = createManager(locales, policies);
-
-        await expect(manager.changeLocale('it-IT')).rejects.toThrow('Unknown locale id: it-IT');
-    });
-
-    it('should save the new locale on the first policy that has the save() method', async () => {
-        const policies = [
-            { match: jest.fn(() => null) },
-            { match: jest.fn(() => locales[0].id), save: jest.fn(() => {}) },
-            { match: jest.fn(() => locales[1].id), save: jest.fn(() => {}) },
-        ];
-
-        const manager = createManager(locales, policies);
-
-        await manager.changeLocale(locales[1].id);
-
-        expect(policies[1].save).toHaveBeenCalledTimes(1);
-        expect(policies[1].save).toHaveBeenCalledWith(locales[1]);
-        expect(policies[2].save).toHaveBeenCalledTimes(0);
-    });
-
-    it('should cancel previous save operation', async () => {
-        const saveWithDelay = jest.fn(() => pDelay(250));
-        const save = jest.fn(() => {});
-
-        const policies = [
-            { match: jest.fn(() => locales[0].id) },
-            { match: jest.fn(() => locales[1].id), save: saveWithDelay },
-            { match: jest.fn(() => locales[2].id) },
-        ];
-
-        const manager = createManager(locales, policies);
-        let canceled;
-
-        manager.changeLocale(locales[1].id)
-        .catch((err) => {
-            canceled = err.isCanceled;
+            policies.forEach((policy) => expect(policy.match).toHaveBeenCalledTimes(0));
+            locales.forEach((locales) => expect(locales.loadMessages).toHaveBeenCalledTimes(0));
         });
 
-        await pDelay(50);
-        policies[1].save = save;
+        it('should throw if the initial locale does not exist', () => {
+            const initialData = {
+                localeId: 'it-IT',
+                messages: {},
+            };
 
-        await manager.changeLocale(locales[2].id);
+            expect(() => createManager(locales, [], initialData))
+            .toThrow('Unknown locale id: it-IT');
+        });
 
-        await pDelay(300);
+        it('should watch all policies', () => {
+            const policies = locales.map(({ id }) => ({
+                match: () => id,
+                watch: jest.fn(),
+            }));
 
-        expect(canceled).toBe(true);
-        expect(saveWithDelay).toHaveBeenCalledTimes(1);
-        expect(save).toHaveBeenCalledTimes(1);
-        expect(manager.locale).toBe(locales[2]);
+            const initialData = {
+                localeId: locales[0].id,
+                messages: messages[locales[0].id],
+            };
+
+            createManager(locales, policies, initialData);
+
+            policies.forEach((policy) => expect(policy.watch).toHaveBeenCalledTimes(1));
+        });
+
+        it('should apply the locale on the first policy that has the act() method', () => {
+            const policies = [
+                { match: jest.fn(() => null), watch: jest.fn() },
+                { match: jest.fn(() => locales[1].id), act: jest.fn() },
+                { match: jest.fn(() => locales[0].id), act: jest.fn() },
+            ];
+
+            const initialData = {
+                localeId: locales[0].id,
+                messages: messages[locales[0].id],
+            };
+
+            createManager(locales, policies, initialData);
+
+            expect(policies[1].act).toHaveBeenCalledTimes(1);
+            expect(policies[1].act).toHaveBeenCalledWith(locales[0]);
+            expect(policies[2].act).toHaveBeenCalledTimes(0);
+        });
     });
 
-    it('should apply the locale on the first policy that has the act() method', async () => {
-        const policies = [
-            { match: jest.fn(() => null) },
-            { match: jest.fn(() => locales[0].id), act: jest.fn(() => {}) },
-            { match: jest.fn(() => locales[1].id), act: jest.fn(() => {}) },
-        ];
+    describe('policy invoked watch callback', () => {
+        beforeAll(() => {
+            jest.spyOn(console, 'error').mockImplementation(() => {});
+        });
 
-        const manager = createManager(locales, policies);
+        afterEach(() => {
+            console.error.mockClear();
+        });
 
-        policies.forEach((policy) => policy?.act?.mockClear());
+        afterAll(() => {
+            console.error.mockRestore();
+        });
 
-        await manager.changeLocale(locales[1].id);
+        it('should iterate all policies, until one matches a locale', () => {
+            const policies = [
+                { match: jest.fn(() => null) },
+                { match: jest.fn(() => locales[0].id) },
+                { match: jest.fn(() => null), watch: jest.fn() },
+            ];
 
-        expect(policies[1].act).toHaveBeenCalledTimes(1);
-        expect(policies[1].act).toHaveBeenCalledWith(locales[1]);
-        expect(policies[2].act).toHaveBeenCalledTimes(0);
+            const initialData = {
+                localeId: locales[0].id,
+                messages: messages[locales[0].id],
+            };
+
+            createManager(locales, policies, initialData);
+
+            const callback = policies[2].watch.mock.calls[0][0];
+
+            policies.forEach(({ match }) => match.mockClear());
+            policies.match = jest.fn(() => locales[1].id);
+            callback(locales[1].id);
+
+            expect(policies[0].match).toHaveBeenCalledTimes(1);
+            expect(policies[1].match).toHaveBeenCalledTimes(1);
+            expect(policies[2].match).toHaveBeenCalledTimes(0);
+        });
+
+        it('should apply the locale on the first policy that has the act() method', async () => {
+            const policies = [
+                { match: jest.fn(() => null), watch: jest.fn() },
+                { match: jest.fn(() => locales[1].id), act: jest.fn() },
+                { match: jest.fn(() => null), act: jest.fn() },
+            ];
+
+            const initialData = {
+                localeId: locales[1].id,
+                messages: messages[locales[1].id],
+            };
+
+            createManager(locales, policies, initialData);
+
+            policies.forEach((policy) => policy.act?.mockClear());
+
+            const callback = policies[0].watch.mock.calls[0][0];
+
+            policies[0].match = () => locales[0].id;
+            callback(locales[0].id);
+
+            await pDelay(15);
+
+            expect(policies[1].act).toHaveBeenCalledTimes(1);
+            expect(policies[1].act).toHaveBeenCalledWith(locales[0]);
+            expect(policies[2].act).toHaveBeenCalledTimes(0);
+        });
+
+        it('should suspend the previous act()', async () => {
+            const suspendAct = jest.fn();
+
+            const policies = [
+                { match: jest.fn(() => null), watch: jest.fn() },
+                { match: jest.fn(() => locales[1].id), act: jest.fn(() => suspendAct) },
+                { match: jest.fn(() => null), act: jest.fn() },
+            ];
+
+            const initialData = {
+                localeId: locales[1].id,
+                messages: messages[locales[1].id],
+            };
+
+            createManager(locales, policies, initialData);
+
+            const callback = policies[0].watch.mock.calls[0][0];
+
+            policies[0].match = () => locales[0].id;
+            callback(locales[0].id);
+
+            await pDelay(15);
+
+            expect(suspendAct).toHaveBeenCalledTimes(1);
+        });
+
+        it('should update current locale', async () => {
+            const policies = [
+                { match: () => null, watch: jest.fn() },
+                { match: () => locales[1].id },
+            ];
+
+            const initialData = {
+                localeId: locales[1].id,
+                messages: messages[locales[1].id],
+            };
+
+            const manager = createManager(locales, policies, initialData);
+
+            const callback = policies[0].watch.mock.calls[0][0];
+
+            policies[0].match = () => locales[0].id;
+            callback(locales[0].id);
+
+            await pDelay(15);
+
+            expect(manager.locale).toBe(locales[0]);
+        });
+
+        it('should notify change listeners', async () => {
+            const policies = [
+                { match: () => null, watch: jest.fn() },
+                { match: () => locales[1].id },
+            ];
+
+            const initialData = {
+                localeId: locales[1].id,
+                messages: messages[locales[1].id],
+            };
+
+            const listener = jest.fn();
+            const manager = createManager(locales, policies, initialData);
+
+            manager.onLocaleChange(listener);
+
+            const callback = policies[0].watch.mock.calls[0][0];
+
+            policies[0].match = () => locales[0].id;
+            callback(locales[0].id);
+
+            await pDelay(15);
+
+            expect(listener).toHaveBeenCalledTimes(1);
+            expect(listener).toHaveBeenCalledWith(locales[0]);
+        });
+
+        it('should fail if locale does not exist', async () => {
+            const policies = [
+                { match: () => locales[0].id, watch: jest.fn() },
+            ];
+
+            const initialData = {
+                localeId: locales[0].id,
+                messages: messages[locales[0].id],
+            };
+
+            const listener = jest.fn();
+            const manager = createManager(locales, policies, initialData);
+
+            manager.onLocaleChange(listener);
+
+            const callback = policies[0].watch.mock.calls[0][0];
+
+            policies[0].match = () => 'it-IT';
+            callback('it-IT');
+
+            await pDelay(15);
+
+            expect(console.error).toHaveBeenCalledTimes(1);
+            expect(console.error).toHaveBeenCalledWith(new Error('Unknown locale id: it-IT'));
+        });
+
+        it('should fail if none of the policies matched', async () => {
+            const policies = [
+                { match: () => null, watch: jest.fn() },
+            ];
+
+            const initialData = {
+                localeId: locales[0].id,
+                messages: messages[locales[0].id],
+            };
+
+            const listener = jest.fn();
+            const manager = createManager(locales, policies, initialData);
+
+            manager.onLocaleChange(listener);
+
+            const callback = policies[0].watch.mock.calls[0][0];
+
+            callback('it-IT');
+
+            await pDelay(15);
+
+            expect(console.error).toHaveBeenCalledTimes(1);
+            expect(console.error).toHaveBeenCalledWith(
+                new Error('None of the policies matched a locale.. did you forgot to include the default policy?'),
+            );
+        });
+
+        it('should cancel ongoing async operations', async () => {
+            const policies = [
+                { match: () => null, watch: jest.fn() },
+                { match: () => locales[1].id },
+            ];
+
+            const initialData = {
+                localeId: locales[1].id,
+                messages: messages[locales[1].id],
+            };
+
+            const listener = jest.fn();
+            const manager = createManager(locales, policies, initialData);
+
+            manager.onLocaleChange(listener);
+
+            const callback = policies[0].watch.mock.calls[0][0];
+
+            policies[0].match = () => locales[0].id;
+            callback(locales[0].id);
+
+            await pDelay(15);
+
+            const pGroup = createPGroup.mock.results[0].value;
+
+            expect(pGroup.add).toHaveBeenCalledTimes(1);
+            expect(pGroup.cancel).toHaveBeenCalledTimes(1);
+        });
+    });
+    describe('toData()', () => {
+        it('should return the localeId and messages', () => {
+            const policies = [
+                { match: locales[0].id },
+            ];
+
+            const initialData = {
+                localeId: locales[0].id,
+                messages: messages[locales[0].id],
+            };
+
+            const manager = createManager(locales, policies, initialData);
+
+            expect(manager.toData()).toEqual(initialData);
+        });
     });
 
-    it('should suspend the previous act()', async () => {
-        const suspendAct = jest.fn();
+    describe('changeLocale()', () => {
+        it('should fail if locale does not exist', async () => {
+            const policies = [
+                { match: () => locales[0].id },
+                { match: () => locales[1].id },
+            ];
 
-        const policies = [
-            { match: jest.fn(() => null) },
-            { match: jest.fn(() => locales[0].id), act: jest.fn(() => suspendAct) },
-            { match: jest.fn(() => locales[1].id), act: jest.fn(() => {}) },
-        ];
+            const initialData = {
+                localeId: locales[0].id,
+                messages: messages[locales[0].id],
+            };
 
-        const manager = createManager(locales, policies);
+            const manager = createManager(locales, policies, initialData);
 
-        await manager.changeLocale(locales[1].id);
+            await expect(manager.changeLocale('it-IT')).rejects.toThrow('Unknown locale id: it-IT');
+        });
 
-        expect(suspendAct).toHaveBeenCalledTimes(1);
+        it('should save the new locale on the first policy that has the save() method', async () => {
+            const policies = [
+                { match: jest.fn(() => null) },
+                { match: jest.fn(() => locales[0].id), save: jest.fn() },
+                { match: jest.fn(() => locales[1].id), save: jest.fn() },
+            ];
+
+            const initialData = {
+                localeId: locales[0].id,
+                messages: messages[locales[0].id],
+            };
+
+            const manager = createManager(locales, policies, initialData);
+
+            await manager.changeLocale(locales[1].id);
+
+            expect(policies[1].save).toHaveBeenCalledTimes(1);
+            expect(policies[1].save).toHaveBeenCalledWith(locales[1]);
+            expect(policies[2].save).toHaveBeenCalledTimes(0);
+        });
+
+        it('should cancel ongoing async operations', async () => {
+            const policies = [
+                { match: jest.fn(() => null) },
+                { match: jest.fn(() => locales[0].id), save: jest.fn() },
+                { match: jest.fn(() => locales[1].id), save: jest.fn() },
+            ];
+
+            const initialData = {
+                localeId: locales[0].id,
+                messages: messages[locales[0].id],
+            };
+
+            const manager = createManager(locales, policies, initialData);
+
+            await manager.changeLocale(locales[1].id);
+
+            const pGroup = createPGroup.mock.results[0].value;
+
+            expect(pGroup.add).toHaveBeenCalledTimes(2);
+            expect(pGroup.cancel).toHaveBeenCalledTimes(1);
+        });
+
+        it('should apply the locale on the first policy that has the act() method', async () => {
+            const policies = [
+                { match: jest.fn(() => null) },
+                { match: jest.fn(() => locales[0].id), act: jest.fn() },
+                { match: jest.fn(() => locales[1].id), act: jest.fn() },
+            ];
+
+            const initialData = {
+                localeId: locales[0].id,
+                messages: messages[locales[0].id],
+            };
+
+            const manager = createManager(locales, policies, initialData);
+
+            policies.forEach((policy) => policy?.act?.mockClear());
+
+            await manager.changeLocale(locales[1].id);
+
+            expect(policies[1].act).toHaveBeenCalledTimes(1);
+            expect(policies[1].act).toHaveBeenCalledWith(locales[1]);
+            expect(policies[2].act).toHaveBeenCalledTimes(0);
+        });
+
+        it('should suspend the previous act()', async () => {
+            const suspendAct = jest.fn();
+
+            const policies = [
+                { match: jest.fn(() => null) },
+                { match: jest.fn(() => locales[0].id), act: jest.fn(() => suspendAct) },
+                { match: jest.fn(() => locales[1].id), act: jest.fn() },
+            ];
+
+            const initialData = {
+                localeId: locales[0].id,
+                messages: messages[locales[0].id],
+            };
+
+            const manager = createManager(locales, policies, initialData);
+
+            await manager.changeLocale(locales[1].id);
+
+            expect(suspendAct).toHaveBeenCalledTimes(1);
+        });
+
+        it('should do nothing if locale is the same', async () => {
+            const policies = [
+                {
+                    match: () => locales[0].id,
+                    act: jest.fn(),
+                    save: jest.fn(() => pDelay(250)),
+                },
+            ];
+
+            const initialData = {
+                localeId: locales[0].id,
+                messages: messages[locales[0].id],
+            };
+
+            const manager = createManager(locales, policies, initialData);
+
+            policies[0].act.mockClear();
+
+            await manager.changeLocale(locales[0].id);
+
+            expect(policies[0].act).toHaveBeenCalledTimes(0);
+            expect(policies[0].save).toHaveBeenCalledTimes(0);
+        });
     });
 
-    it('should do nothing if locale is the same', async () => {
-        const policies = [
-            {
-                match: () => locales[0].id,
-                act: jest.fn(() => {}),
-                save: jest.fn(() => pDelay(250)),
-            },
-        ];
+    describe('destroy()', () => {
+        it('should suspend watching all policies', () => {
+            const suspendWatch = jest.fn();
 
-        const manager = createManager(locales, policies);
+            const policies = locales.map(({ id }) => ({
+                match: () => id,
+                watch: jest.fn(() => suspendWatch),
+            }));
 
-        policies[0].act.mockClear();
+            const initialData = {
+                localeId: locales[0].id,
+                messages: messages[locales[0].id],
+            };
 
-        await manager.changeLocale(locales[0].id);
+            const manager = createManager(locales, policies, initialData);
 
-        expect(policies[0].act).toHaveBeenCalledTimes(0);
-        expect(policies[0].save).toHaveBeenCalledTimes(0);
-    });
-});
+            manager.destroy();
 
-describe('destroy()', () => {
-    it('should suspend watching all policies', () => {
-        const suspendWatch = jest.fn();
+            expect(suspendWatch).toHaveBeenCalledTimes(locales.length);
+        });
 
-        const policies = locales.map(({ id }) => ({
-            match: () => id,
-            watch: jest.fn(() => suspendWatch),
-        }));
+        it('should suspend the previous act()', async () => {
+            const suspendAct = jest.fn();
 
-        const manager = createManager(locales, policies);
+            const policies = [
+                { match: jest.fn(() => null) },
+                { match: jest.fn(() => locales[0].id), act: jest.fn(() => suspendAct) },
+                { match: jest.fn(() => locales[1].id), act: jest.fn() },
+            ];
 
-        manager.destroy();
+            const initialData = {
+                localeId: locales[0].id,
+                messages: messages[locales[0].id],
+            };
 
-        expect(suspendWatch).toHaveBeenCalledTimes(locales.length);
-    });
+            const manager = createManager(locales, policies, initialData);
 
-    it('should suspend the previous act()', async () => {
-        const suspendAct = jest.fn();
+            manager.destroy();
 
-        const policies = [
-            { match: jest.fn(() => null) },
-            { match: jest.fn(() => locales[0].id), act: jest.fn(() => suspendAct) },
-            { match: jest.fn(() => locales[1].id), act: jest.fn(() => {}) },
-        ];
+            expect(suspendAct).toHaveBeenCalledTimes(1);
+        });
 
-        const manager = createManager(locales, policies);
+        it('should cancel ongoing async operations', () => {
+            const policies = [
+                { match: jest.fn(() => locales[0].id) },
+            ];
 
-        manager.destroy();
+            const initialData = {
+                localeId: locales[0].id,
+                messages: messages[locales[0].id],
+            };
 
-        expect(suspendAct).toHaveBeenCalledTimes(1);
+            const manager = createManager(locales, policies, initialData);
+
+            const pGroup = createPGroup.mock.results[0].value;
+
+            manager.destroy();
+
+            expect(pGroup.cancel).toHaveBeenCalledTimes(1);
+        });
     });
 });

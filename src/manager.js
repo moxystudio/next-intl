@@ -79,34 +79,32 @@ const createManager = (locales, policies, initialData) => {
     let suspendWatch;
     let suspendAct;
 
+    /* istanbul ignore else */
     if (typeof window !== 'undefined') {
         suspendAct = act(policies, locale);
 
         suspendWatch = watch(policies, async () => {
-            const newLocale = match(locales, policies);
-
-            if (newLocale.id === locale.id) {
-                return;
-            }
-
-            pGroup.cancel();
-
             try {
+                const newLocale = match(locales, policies);
+
+                if (newLocale.id === locale.id) {
+                    return;
+                }
+
+                pGroup.cancel();
+
                 messages = await pGroup.add(locale.loadMessages());
+                locale = newLocale;
+
+                suspendAct && suspendAct();
+                suspendAct = act(policies, locale);
+
+                changeSignal.dispatch(locale);
             } catch (err) {
                 if (!err.isCanceled) {
                     console.error(err);
                 }
-
-                return;
             }
-
-            locale = newLocale;
-
-            suspendAct && suspendAct();
-            suspendAct = act(policies, locale);
-
-            changeSignal.dispatch(locale);
         });
     }
 
@@ -127,6 +125,7 @@ const createManager = (locales, policies, initialData) => {
         },
 
         async changeLocale(localeId) {
+            /* istanbul ignore if */
             if (typeof window === 'undefined') {
                 throw new Error('This function can only be run on the client-side');
             }

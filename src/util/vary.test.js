@@ -1,4 +1,4 @@
-import addVary from './add-vary';
+import addVary from './vary';
 
 it('should set Vary header correctly when undefined', () => {
     const res = {
