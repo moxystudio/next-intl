@@ -1,7 +1,7 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { render } from '@testing-library/react';
-import NextIntlContext from './context';
+import NextIntlProvider from './NextIntlProvider';
 import createManager from '../manager';
 
 jest.mock('../manager', () => jest.fn((...args) => {
@@ -42,12 +42,12 @@ afterEach(() => {
 
 it('should setup IntlProvider with the correct locale and messages', () => {
     const { queryByText } = render(
-        <NextIntlContext.Provider
+        <NextIntlProvider
             locales={ locales }
             policies={ policies }
             initialData={ initialData }>
             <FormattedMessage id="apple" />
-        </NextIntlContext.Provider>,
+        </NextIntlProvider>,
     );
 
     const appleMessage = messages[initialData.localeId].apple;
@@ -57,13 +57,13 @@ it('should setup IntlProvider with the correct locale and messages', () => {
 
 it('should pass any extraneous props to IntlProvider', () => {
     const { container } = render(
-        <NextIntlContext.Provider
+        <NextIntlProvider
             locales={ locales }
             policies={ policies }
             initialData={ initialData }
             textComponent={ 'p' }>
             <FormattedMessage id="apple" />
-        </NextIntlContext.Provider>,
+        </NextIntlProvider>,
     );
 
     const appleMessage = messages[initialData.localeId].apple;
@@ -76,23 +76,23 @@ it('should pass any extraneous props to IntlProvider', () => {
 
 it('should reconstruct the manager each time the locales change', () => {
     const { rerender, queryByText } = render(
-        <NextIntlContext.Provider
+        <NextIntlProvider
             locales={ locales }
             policies={ policies }
             initialData={ initialData }>
             <FormattedMessage id="apple" />
-        </NextIntlContext.Provider>,
+        </NextIntlProvider>,
     );
 
     const newLocales = locales.slice(0, 2);
 
     rerender(
-        <NextIntlContext.Provider
+        <NextIntlProvider
             locales={ newLocales }
             policies={ policies }
             initialData={ initialData }>
             <FormattedMessage id="apple" />
-        </NextIntlContext.Provider>,
+        </NextIntlProvider>,
     );
 
     const appleMessage = messages[initialData.localeId].apple;
@@ -103,12 +103,12 @@ it('should reconstruct the manager each time the locales change', () => {
 
 it('should reconstruct the manager each time the policies change', () => {
     const { rerender, queryByText } = render(
-        <NextIntlContext.Provider
+        <NextIntlProvider
             locales={ locales }
             policies={ policies }
             initialData={ initialData }>
             <FormattedMessage id="apple" />
-        </NextIntlContext.Provider>,
+        </NextIntlProvider>,
     );
 
     const newPolicies = [
@@ -116,12 +116,12 @@ it('should reconstruct the manager each time the policies change', () => {
     ];
 
     rerender(
-        <NextIntlContext.Provider
+        <NextIntlProvider
             locales={ locales }
             policies={ newPolicies }
             initialData={ initialData }>
             <FormattedMessage id="apple" />
-        </NextIntlContext.Provider>,
+        </NextIntlProvider>,
     );
 
     const appleMessage = messages[initialData.localeId].apple;
@@ -134,7 +134,7 @@ it('should fail if locales changed but current locale does not exist', () => {
     jest.spyOn(console, 'error').mockImplementation(() => {});
 
     const { rerender } = render(
-        <NextIntlContext.Provider
+        <NextIntlProvider
             locales={ locales }
             policies={ policies }
             initialData={ initialData } />,
@@ -144,7 +144,7 @@ it('should fail if locales changed but current locale does not exist', () => {
 
     expect(() => {
         rerender(
-            <NextIntlContext.Provider
+            <NextIntlProvider
                 locales={ newLocales }
                 policies={ policies }
                 initialData={ initialData } />,
@@ -154,12 +154,12 @@ it('should fail if locales changed but current locale does not exist', () => {
 
 it('should rerender when locale changes', async () => {
     const { queryByText } = render(
-        <NextIntlContext.Provider
+        <NextIntlProvider
             locales={ locales }
             policies={ policies }
             initialData={ initialData }>
             <FormattedMessage id="apple" />
-        </NextIntlContext.Provider>,
+        </NextIntlProvider>,
     );
 
     const manager = createManager.mock.results[0].value;
@@ -173,12 +173,12 @@ it('should rerender when locale changes', async () => {
 
 it('should destroy the manager when unmounted', () => {
     const { unmount } = render(
-        <NextIntlContext.Provider
+        <NextIntlProvider
             locales={ locales }
             policies={ policies }
             initialData={ initialData }>
             <FormattedMessage id="apple" />
-        </NextIntlContext.Provider>,
+        </NextIntlProvider>,
     );
 
     unmount();

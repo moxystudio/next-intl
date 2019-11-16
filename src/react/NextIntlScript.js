@@ -1,5 +1,7 @@
 import fs from 'fs';
 import React from 'react';
+import memoizeOne from 'memoize-one';
+import PropTypes from 'prop-types';
 
 // The script bellow was minified using terser: https://xem.github.io/terser-online/
 // You may find the original script below in case you need to modify it:
@@ -16,7 +18,7 @@ if (!Intl.PluralRules || !Intl.RelativeTimeFormat) {
 */
 const buildScript = (polyfillChunkPublicPath) => `(function(){if(!Intl.PluralRules||!Intl.RelativeTimeFormat){var e=document.currentScript,t=document.createElement("script");t.src="${polyfillChunkPublicPath}",e.parentNode.insertBefore(t,e.nextSibling)}})();`;
 
-const getPolyfillChunkPublicPath = () => {
+const getPolyfillChunkPublicPath = (assetPrefix) => {
     const manifest = JSON.parse(fs.readFileSync('.next/react-loadable-manifest.json'));
     const publicPath = manifest?.['@formatjs/intl-pluralrules/polyfill-locales']?.[0]?.publicPath;
 
@@ -24,15 +26,25 @@ const getPolyfillChunkPublicPath = () => {
         throw new Error('Could not find intl-polyfill chunk in .next/react-loadable-manifest.json');
     }
 
-    return __webpack_public_path__ + publicPath; // eslint-disable-line
+    return `${assetPrefix}/_next/${publicPath}`;
 };
 
-const NextIntlScript = () => {
-    const polyfillChunkPublicPath = getPolyfillChunkPublicPath();
+const memoizedGetPolyfillChunkPublicPath =
+    process.env.NODE_ENV === 'test' ? getPolyfillChunkPublicPath : memoizeOne(getPolyfillChunkPublicPath);
 
+const NextIntlScript = ({ assetPrefix }) => {
+    const polyfillChunkPublicPath = memoizedGetPolyfillChunkPublicPath(assetPrefix);
     const script = buildScript(polyfillChunkPublicPath);
 
     return <script dangerouslySetInnerHTML={ { __html: script } } />;
+};
+
+NextIntlScript.defaultProps = {
+    assetPrefix: '',
+};
+
+NextIntlScript.propTypes = {
+    assetPrefix: PropTypes.string,
 };
 
 export default NextIntlScript;

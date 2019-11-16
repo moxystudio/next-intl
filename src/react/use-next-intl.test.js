@@ -1,7 +1,7 @@
 import React from 'react';
 import { render } from '@testing-library/react';
-import NextIntlContext from './context';
-import useNextIntl from './hook';
+import NextIntlProvider from './NextIntlProvider';
+import useNextIntl from './use-next-intl';
 
 const messages = {
     'en-US': { apple: 'apple' },
@@ -25,11 +25,7 @@ const initialData = {
     messages: messages[locales[1].id],
 };
 
-afterEach(() => {
-    console.error.mockRestore?.();
-});
-
-it('should setup IntlProvider with the correct locale and messages', () => {
+it('should return the current provider value', () => {
     expect.assertions(1);
 
     const MyComponent = () => {
@@ -40,6 +36,7 @@ it('should setup IntlProvider with the correct locale and messages', () => {
                 locale: expect.any(Object),
                 locales: expect.any(Array),
                 changeLocale: expect.any(Function),
+                intl: expect.any(Object),
             }),
         );
 
@@ -47,11 +44,11 @@ it('should setup IntlProvider with the correct locale and messages', () => {
     };
 
     render(
-        <NextIntlContext.Provider
+        <NextIntlProvider
             locales={ locales }
             policies={ policies }
             initialData={ initialData }>
             <MyComponent />
-        </NextIntlContext.Provider>,
+        </NextIntlProvider>,
     );
 });

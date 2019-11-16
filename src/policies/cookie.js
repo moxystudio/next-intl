@@ -1,5 +1,5 @@
 import Cookies from 'universal-cookie';
-import addVary from '../util/vary';
+import addVary from './util/vary';
 
 const BROADCAST_CHANNEL_NAME = '__NEXT_INTL__';
 

@@ -57,10 +57,6 @@ const watch = (policies, callback) => {
 };
 
 const getInitialData = async (locales, policies, ctx) => {
-    if (typeof window !== 'undefined') {
-        return;
-    }
-
     const locale = match(locales, policies, ctx);
     const messages = await locale.loadMessages();
 
@@ -79,7 +75,6 @@ const createManager = (locales, policies, initialData) => {
     let suspendWatch;
     let suspendAct;
 
-    /* istanbul ignore else */
     if (typeof window !== 'undefined') {
         suspendAct = act(policies, locale);
 
@@ -125,7 +120,6 @@ const createManager = (locales, policies, initialData) => {
         },
 
         async changeLocale(localeId) {
-            /* istanbul ignore if */
             if (typeof window === 'undefined') {
                 throw new Error('This function can only be run on the client-side');
             }

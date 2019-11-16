@@ -1,4 +1,4 @@
-import './polyfill-chunk';
+import './polyfill';
+
 export * from './policies';
 export * from './react';
-export { getInitialData as getInitialIntlData } from './manager';

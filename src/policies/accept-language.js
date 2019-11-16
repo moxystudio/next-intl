@@ -1,5 +1,5 @@
 import parser from 'accept-language-parser';
-import addVary from '../util/vary';
+import addVary from './util/vary';
 
 const createPolicy = (options) => {
     options = {

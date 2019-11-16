@@ -1,5 +1,5 @@
 import pDelay from 'delay';
-import createManager, { getInitialData } from './manager';
+import createManager, { getInitialData } from '.';
 import createPGroup from './util/p-group';
 
 jest.mock('./util/p-group', () => jest.fn(() => ({
@@ -25,7 +25,7 @@ afterEach(() => {
     locales.forEach((locale) => locale.loadMessages.mockClear());
 });
 
-describe('getInitialData() - SS', () => {
+describe('getInitialData()', () => {
     const globalWindow = window;
 
     beforeAll(() => {
@@ -63,24 +63,62 @@ describe('getInitialData() - SS', () => {
     });
 });
 
-describe('getInitialData() - CS', () => {
-    it('should return undefined', async () => {
-        const policies = [
-            { match: jest.fn(() => locales[0].id) },
-            { match: jest.fn(() => locales[1].id) },
-        ];
-
-        const initialData = await getInitialData(locales, policies);
-
-        expect(initialData).toBe(undefined);
-
-        policies.forEach((policy) => expect(policy.match).toHaveBeenCalledTimes(0));
-        locales.forEach((locales) => expect(locales.loadMessages).toHaveBeenCalledTimes(0));
-    });
-});
-
 describe('manager', () => {
-    describe('init', () => {
+    describe('init - SS', () => {
+        const globalWindow = window;
+
+        beforeAll(() => {
+            Object.defineProperty(global, 'window', {
+                value: undefined,
+                writable: true,
+            });
+        });
+
+        afterAll(() => {
+            global.window = globalWindow;
+        });
+
+        it('should start with the initialData', async () => {
+            const policies = [
+                { match: jest.fn(() => locales[0].id) },
+                { match: jest.fn(() => locales[1].id) },
+            ];
+
+            const initialData = {
+                localeId: locales[1].id,
+                messages: messages[locales[1].id],
+            };
+
+            const manager = createManager(locales, policies, initialData);
+
+            expect(manager.locale.id).toBe(initialData.localeId);
+            expect(manager.messages).toBe(initialData.messages);
+
+            policies.forEach((policy) => expect(policy.match).toHaveBeenCalledTimes(0));
+            locales.forEach((locales) => expect(locales.loadMessages).toHaveBeenCalledTimes(0));
+        });
+
+        it('should not call watch nor act on any policy', () => {
+            const policies = [
+                { match: jest.fn(() => locales[0].id), watch: jest.fn(), act: jest.fn() },
+                { match: jest.fn(() => locales[1].id), watch: jest.fn(), act: jest.fn() },
+            ];
+
+            const initialData = {
+                localeId: locales[1].id,
+                messages: messages[locales[1].id],
+            };
+
+            createManager(locales, policies, initialData);
+
+            policies.forEach((policy) => {
+                expect(policy.watch).toHaveBeenCalledTimes(0);
+                expect(policy.act).toHaveBeenCalledTimes(0);
+            });
+        });
+    });
+
+    describe('init - CS', () => {
         it('should start with the initialData', async () => {
             const policies = [
                 { match: jest.fn(() => locales[0].id) },
@@ -371,6 +409,7 @@ describe('manager', () => {
             expect(pGroup.reset).toHaveBeenCalledTimes(1);
         });
     });
+
     describe('toData()', () => {
         it('should return the localeId and messages', () => {
             const policies = [
@@ -388,7 +427,38 @@ describe('manager', () => {
         });
     });
 
-    describe('changeLocale()', () => {
+    describe('changeLocale() - SS', () => {
+        const globalWindow = window;
+
+        beforeAll(() => {
+            Object.defineProperty(global, 'window', {
+                value: undefined,
+                writable: true,
+            });
+        });
+
+        afterAll(() => {
+            global.window = globalWindow;
+        });
+
+        it('should throw an error', async () => {
+            const policies = [
+                { match: () => locales[0].id },
+                { match: () => locales[1].id },
+            ];
+
+            const initialData = {
+                localeId: locales[0].id,
+                messages: messages[locales[0].id],
+            };
+
+            const manager = createManager(locales, policies, initialData);
+
+            await expect(manager.changeLocale('it-IT')).rejects.toThrow('This function can only be run on the client-side');
+        });
+    });
+
+    describe('changeLocale() - CS', () => {
         it('should fail if locale does not exist', async () => {
             const policies = [
                 { match: () => locales[0].id },

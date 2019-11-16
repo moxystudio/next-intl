@@ -1,7 +1,7 @@
 import fs from 'fs';
 import React from 'react';
 import { render } from '@testing-library/react';
-import NextIntlScript from './script';
+import NextIntlScript from './NextIntlScript';
 
 jest.mock('fs', () => ({
     readFileSync: jest.fn(),
@@ -9,6 +9,10 @@ jest.mock('fs', () => ({
 
 beforeAll(() => {
     global.__webpack_public_path__ = '/_next/'; // eslint-disable-line
+});
+
+afterEach(() => {
+    console.error.mockRestore?.();
 });
 
 it('should render a script tag with conditional loading of the polyfill correctly', () => {
@@ -22,6 +26,24 @@ it('should render a script tag with conditional loading of the polyfill correctl
 
     const { container } = render(
         <NextIntlScript />,
+    );
+
+    const script = container.querySelector('script');
+
+    expect(script.innerHTML).toMatchSnapshot();
+});
+
+it('should concatenate with the passed assetPrefix', () => {
+    fs.readFileSync.mockImplementation(() => (
+        JSON.stringify({
+            '@formatjs/intl-pluralrules/polyfill-locales': [
+                { publicPath: 'static/chunks/intl-polyfill.js' },
+            ],
+        })),
+    );
+
+    const { container } = render(
+        <NextIntlScript assetPrefix="https://my.cdn.com" />,
     );
 
     const script = container.querySelector('script');

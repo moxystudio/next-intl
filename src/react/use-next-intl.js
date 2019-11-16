@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import NextIntlContext from './context';
+import NextIntlContext from './util/context';
 
 const useNextIntl = () => useContext(NextIntlContext);
 
