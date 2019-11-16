@@ -74,12 +74,41 @@ it('should pass any extraneous props to IntlProvider', () => {
     expect(element.textContent).toBe(appleMessage);
 });
 
-it('should reconstruct the manager each time the policies change', () => {
-    const { rerender } = render(
+it('should reconstruct the manager each time the locales change', () => {
+    const { rerender, queryByText } = render(
         <NextIntlContext.Provider
             locales={ locales }
             policies={ policies }
-            initialData={ initialData } />,
+            initialData={ initialData }>
+            <FormattedMessage id="apple" />
+        </NextIntlContext.Provider>,
+    );
+
+    const newLocales = locales.slice(0, 2);
+
+    rerender(
+        <NextIntlContext.Provider
+            locales={ newLocales }
+            policies={ policies }
+            initialData={ initialData }>
+            <FormattedMessage id="apple" />
+        </NextIntlContext.Provider>,
+    );
+
+    const appleMessage = messages[initialData.localeId].apple;
+
+    expect(createManager).toHaveBeenCalledTimes(2);
+    expect(queryByText(appleMessage)).toBeDefined();
+});
+
+it('should reconstruct the manager each time the policies change', () => {
+    const { rerender, queryByText } = render(
+        <NextIntlContext.Provider
+            locales={ locales }
+            policies={ policies }
+            initialData={ initialData }>
+            <FormattedMessage id="apple" />
+        </NextIntlContext.Provider>,
     );
 
     const newPolicies = [
@@ -90,10 +119,15 @@ it('should reconstruct the manager each time the policies change', () => {
         <NextIntlContext.Provider
             locales={ locales }
             policies={ newPolicies }
-            initialData={ initialData } />,
+            initialData={ initialData }>
+            <FormattedMessage id="apple" />
+        </NextIntlContext.Provider>,
     );
 
+    const appleMessage = messages[initialData.localeId].apple;
+
     expect(createManager).toHaveBeenCalledTimes(2);
+    expect(queryByText(appleMessage)).toBeDefined();
 });
 
 it('should fail if locales changed but current locale does not exist', () => {
