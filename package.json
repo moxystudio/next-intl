@@ -34,7 +34,7 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git@github.com:moxystudio/react-intl.git"
+    "url": "git@github.com:moxystudio/next-intl.git"
   },
   "dependencies": {
     "@formatjs/intl-pluralrules": "^1.3.2",
