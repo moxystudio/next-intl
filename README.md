@@ -97,8 +97,10 @@ import { NextIntlProvider, getInitialIntlData } from 'next-intl';
 
 export default class MyApp extends App {
     static async getInitialProps(appContext) {
-        const appProps = await super.getInitialProps(appContext);
-        const initialIntData = await getInitialIntlData(locales, policies, appContext.ctx);
+        const [appProps, initialIntData] = await Promise.all([
+            App.getInitialProps(appContext),
+            getInitialIntlData(locales, policies, appContext.ctx),
+        ]);
 
         return { ...appProps, initialIntData };
     }
@@ -130,11 +132,11 @@ Note that you must add `<NextIntlScript>` to your Document's render method. Plea
 
 ### &lt;NextIntlProvider&gt;
 
-This component is a wrapper to [react-intl](https://www.npmjs.com/package/react-intl)'s `<IntlProvider>` that automatically manages the current locale based on the configured policies.
+This component is a wrapper to [react-intl](https://www.npmjs.com/package/react-intl)'s `<IntlProvider>` that automatically manages the current locale based on the configured locales and policies.
 
 Available props:
 
-> You may also pass any of the supported `react-intl`'s `<IntlProvider>` props.
+> You may also pass any of the supported `react-intl`'s `<IntlProvider>` props, except for `locale` and `messages`.
 
 ##### locales
 
