@@ -158,6 +158,14 @@ export default class Homepage extends Component {
 
 Please check the [setup](#setup) guide to know how to set it up.
 
+Available props:
+
+#### assexPrefix
+
+Type: `string`
+
+The configured assetPrefix if any.
+
 ### useNextIntlSetup(config, App)
 
 A higher-order React component that wraps `App`, setting up `getInitialProps` and [`<NextIntlProvider>`](#nextintlprovider) automatically.

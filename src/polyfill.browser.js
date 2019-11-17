@@ -1,4 +1,4 @@
-// The function below is not used but it forces webpack to create the polyfill chunk
+// The function bellow is not used but it forces webpack to create the polyfill chunk
 // since it's statically analyzed
 // This chunk will be loaded by NextIntlScript if the browser needs to be polyfilled
 
