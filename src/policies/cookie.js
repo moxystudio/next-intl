@@ -57,8 +57,6 @@ const createPolicy = (options) => {
 
             broadcastChannel.postMessage({ uid, localeId: locale.id });
             broadcastChannel.close();
-
-            return true;
         },
     };
 };

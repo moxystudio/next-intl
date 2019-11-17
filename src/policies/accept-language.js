@@ -9,7 +9,7 @@ const createPolicy = (options) => {
 
     return {
         match(locales, { req, res }) {
-            const acceptLanguage = typeof window !== 'undefined' ? navigator.languages.join(',') : req?.headers['accept-language'];
+            const acceptLanguage = typeof window !== 'undefined' ? navigator.languages.join(',') : req.headers['accept-language'];
             const languages = locales.map((locale) => locale.id);
 
             const localeId = parser.pick(languages, acceptLanguage, options);

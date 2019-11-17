@@ -221,9 +221,8 @@ describe('save()', () => {
     it('should save cookie correctly', () => {
         const policy = cookiePolicy();
 
-        const saved = policy.save(locales[0]);
+        policy.save(locales[0]);
 
-        expect(saved).toBe(true);
         expect(documentCookieSetter).toHaveBeenCalledTimes(1);
         expect(documentCookieSetter).toHaveBeenCalledWith(`locale=${locales[0].id}`);
     });
