@@ -314,7 +314,7 @@ A policy that saves the locale preference in a cookie and then matches against t
 
 Type: `object`
 
-Any [options](https://github.com/reactivestack/cookies/tree/master/packages/universal-cookie#setname-value-options) from the `universal-cookie` set method are available as well.
+> ℹ️ Any [options](https://github.com/reactivestack/cookies/tree/master/packages/universal-cookie#setname-value-options) from the `universal-cookie` set method are available as well.
 
 ###### name
 
