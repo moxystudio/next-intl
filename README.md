@@ -321,6 +321,8 @@ Type: `object`
 Type: `string`<br>
 Default: `locale`
 
+The cookie name.
+
 #### acceptLanguagePolicy()
 
 A policy that uses the browser's language by matching against the `Accept-Language` request header or `navigator.languages`.
