@@ -36,7 +36,7 @@ const initialData = {
 };
 
 afterEach(() => {
-    createManager.mockClear();
+    jest.clearAllMocks();
     console.error.mockRestore?.();
 });
 

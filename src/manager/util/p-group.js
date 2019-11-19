@@ -7,7 +7,7 @@ const createPGroup = () => {
         wait() {
             return Promise.all(promises);
         },
-        add: (promise) => {
+        add(promise) {
             if (typeof promise?.cancel !== 'function') {
                 const originalPromise = Promise.resolve(promise);
 
@@ -18,7 +18,7 @@ const createPGroup = () => {
 
             return promise;
         },
-        reset: () => {
+        reset() {
             promises.forEach((promise) => promise.cancel());
             promises = [];
         },

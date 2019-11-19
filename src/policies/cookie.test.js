@@ -20,7 +20,7 @@ beforeAll(() => {
 });
 
 afterEach(() => {
-    global.BroadcastChannel.mockClear();
+    jest.clearAllMocks();
 });
 
 describe('match() - SS', () => {

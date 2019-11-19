@@ -21,8 +21,7 @@ const locales = [
 ];
 
 afterEach(() => {
-    createPGroup.mockClear();
-    locales.forEach((locale) => locale.loadMessages.mockClear());
+    jest.clearAllMocks();
 });
 
 describe('getInitialData()', () => {
@@ -188,10 +187,6 @@ describe('manager', () => {
     describe('policy invoked watch callback', () => {
         beforeAll(() => {
             jest.spyOn(console, 'error').mockImplementation(() => {});
-        });
-
-        afterEach(() => {
-            console.error.mockClear();
         });
 
         afterAll(() => {
