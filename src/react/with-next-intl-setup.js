@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import hoistNonReactStatics from 'hoist-non-react-statics';
 import NextIntlProvider, { getInitialProps } from './NextIntlProvider';
 
-const withNextIntlSetup = (config, WrappedApp) => {
+const withNextIntlSetup = (config) => (WrappedApp) => {
     let locale;
 
     class WithNextIntlSetup extends Component {

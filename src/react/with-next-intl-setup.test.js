@@ -42,7 +42,7 @@ describe('getInitialProps SSR', () => {
 
     it('should return an object with the nextIntlProviderProps', async () => {
         const MyApp = () => null;
-        const EnhancedMyApp = withNextIntlSetup({ locales, policies }, MyApp);
+        const EnhancedMyApp = withNextIntlSetup({ locales, policies })(MyApp);
 
         const initialProps = await EnhancedMyApp.getInitialProps({ ctx: {} });
 
@@ -59,7 +59,7 @@ describe('getInitialProps SSR', () => {
 
         MyApp.getInitialProps = () => ({ foo: 'bar' });
 
-        const EnhancedMyApp = withNextIntlSetup({ locales, policies }, MyApp);
+        const EnhancedMyApp = withNextIntlSetup({ locales, policies })(MyApp);
 
         const initialProps = await EnhancedMyApp.getInitialProps({ ctx: {} });
 
@@ -70,7 +70,7 @@ describe('getInitialProps SSR', () => {
         const appContext = { ctx: {} };
 
         const MyApp = () => null;
-        const EnhancedMyApp = withNextIntlSetup({ locales, policies }, MyApp);
+        const EnhancedMyApp = withNextIntlSetup({ locales, policies })(MyApp);
 
         await EnhancedMyApp.getInitialProps(appContext);
 
@@ -83,7 +83,7 @@ describe('getInitialProps - CS', () => {
         const appContext = { ctx: {} };
 
         const MyApp = () => null;
-        const EnhancedMyApp = withNextIntlSetup({ locales, policies }, MyApp);
+        const EnhancedMyApp = withNextIntlSetup({ locales, policies })(MyApp);
 
         const nextIntlProviderProps = { initialData };
 
@@ -108,7 +108,7 @@ describe('getInitialProps - CS', () => {
             return null;
         };
 
-        const EnhancedMyApp = withNextIntlSetup({ locales, policies }, MyApp);
+        const EnhancedMyApp = withNextIntlSetup({ locales, policies })(MyApp);
 
         const nextIntlProviderProps = { initialData };
 
@@ -126,7 +126,7 @@ describe('getInitialProps - CS', () => {
 
 it('should setup the NextIntlProvider', async () => {
     const MyApp = () => <FormattedMessage id="apple" />;
-    const EnhancedMyApp = withNextIntlSetup({ locales, policies }, MyApp);
+    const EnhancedMyApp = withNextIntlSetup({ locales, policies })(MyApp);
 
     const nextIntlProviderProps = { initialData };
 
@@ -141,7 +141,7 @@ it('should setup the NextIntlProvider', async () => {
 
 it('should spread any other props to the app component', async () => {
     const MyApp = ({ foo }) => <div>{ foo }</div>; // eslint-disable-line react/prop-types
-    const EnhancedMyApp = withNextIntlSetup({ locales, policies }, MyApp);
+    const EnhancedMyApp = withNextIntlSetup({ locales, policies })(MyApp);
 
     const nextIntlProviderProps = { initialData };
 
@@ -157,7 +157,7 @@ it('should copy statics', () => {
 
     MyApp.foo = 'bar';
 
-    const EnhancedMyApp = withNextIntlSetup({ locales, policies }, MyApp);
+    const EnhancedMyApp = withNextIntlSetup({ locales, policies })(MyApp);
 
     expect(EnhancedMyApp.foo).toBe('bar');
 });

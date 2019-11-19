@@ -90,15 +90,15 @@ export default class MyDocument extends Document {
 }
 ```
 
-#### 3. Wrap your app with `withSetupNextIntl()` in `pages/_app.js`:
+#### 3. Wrap your app with `withNextIntlSetup` in `pages/_app.js`:
 
 ```js
 import React from 'react';
 import App from 'next/app';
-import { withSetupNextIntl } from '@moxy/next-intl';
+import { withNextIntlSetup } from '@moxy/next-intl';
 import nextIntlConfig from '../intl';
 
-export default withSetupNextIntl(nextIntlConfig, App);
+export default withNextIntlSetup(nextIntlConfig)(App);
 ```
 
 Here's an example if you have a custom app:
@@ -106,7 +106,7 @@ Here's an example if you have a custom app:
 ```js
 import React from 'react';
 import App from 'next/app';
-import { withSetupNextIntl } from '@moxy/next-intl';
+import { withNextIntlSetup } from '@moxy/next-intl';
 import nextIntlConfig from '../intl';
 import Layout from '../components/layout';
 
@@ -122,7 +122,7 @@ class MyApp extends App {
     }
 }
 
-export default withSetupNextIntl(nextIntlConfig, MyApp);
+export default withNextIntlSetup(nextIntlConfig)(MyApp);
 ```
 
 #### 4. Ready!
@@ -166,7 +166,7 @@ Type: `string`
 
 The configured assetPrefix if any.
 
-### useNextIntlSetup(config, App)
+### withNextIntlSetup(config)(App)
 
 A higher-order React component that wraps `App`, setting up `getInitialProps` and [`<NextIntlProvider>`](#nextintlprovider) automatically.
 
@@ -211,7 +211,7 @@ The App component that will be wrapped.
 
 A React component sets up [`react-intl`](https://www.npmjs.com/package/react-intl)'s `<IntlProvider>` and automatically manages the current locale based on the configured locales and policies.
 
-> ⚠️ Please note that you should use [`withNextIntlSetup`](#usenextintlsetup) rather than setting up the provider yourself.
+> ⚠️ Please note that you should use [`withNextIntlSetup`](#withnextintlsetupconfigapp) rather than setting up the provider yourself.
 
 The provider value is an object with the following shape:
 
