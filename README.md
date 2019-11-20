@@ -63,7 +63,13 @@ export default {
 };
 ```
 
-You may declare more locales by adding them into the `locales` array.
+The `messages/en-US.json` file contains the messages for the `en-US` locale:
+
+```json
+{
+    "hello": "Hello World"
+}
+```
 
 #### 2. Include `<NextIntlScript>` in `pages/_document.js`:
 
@@ -168,7 +174,7 @@ The configured assetPrefix if any.
 
 ### withNextIntlSetup(config)(App)
 
-A higher-order React component that wraps `App`, setting up `getInitialProps` and [`<NextIntlProvider>`](#nextintlprovider) automatically.
+An higher-order React component that wraps `App`, setting up `getInitialProps` and [`<NextIntlProvider>`](#nextintlprovider) automatically.
 
 Please check the [setup](#setup) guide to know how to set it up.
 
@@ -176,7 +182,7 @@ Please check the [setup](#setup) guide to know how to set it up.
 
 Type: `object`
 
-> ℹ️ You may also pass any of the supported `react-intl`'s [`<IntlProvider>`](https://github.com/formatjs/react-intl/blob/master/docs/Components.md#intlprovider) props, except for `locale` and `messages`.
+> ℹ️ You may pass any of the supported `react-intl`'s [`<IntlProvider>`](https://github.com/formatjs/react-intl/blob/master/docs/Components.md#intlprovider) props as well, except for `locale` and `messages`.
 
 ##### locales
 
@@ -209,7 +215,7 @@ The App component that will be wrapped.
 
 ### &lt;NextIntlProvider&gt;
 
-A React component sets up [`react-intl`](https://www.npmjs.com/package/react-intl)'s `<IntlProvider>` and automatically manages the current locale based on the configured locales and policies.
+A React component that sets up [`react-intl`](https://www.npmjs.com/package/react-intl)'s `<IntlProvider>` and automatically manages the current locale based on the configured locales and policies.
 
 > ⚠️ Please note that you should use [`withNextIntlSetup`](#withnextintlsetupconfigapp) rather than setting up the provider yourself.
 
