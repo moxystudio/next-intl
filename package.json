@@ -1,6 +1,6 @@
 {
   "name": "@moxy/next-intl",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Library to integrate react-intl with Next.js, making it easy to manage the current locale based on configurable policies",
   "main": "lib/index.js",
   "module": "es/index.js",
