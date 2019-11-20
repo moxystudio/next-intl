@@ -1,0 +1,82 @@
+{
+  "name": "@moxy/next-intl",
+  "version": "0.0.0",
+  "description": "Library to integrate react-intl with Next.js, making it easy to manage the current locale based on configurable policies",
+  "main": "lib/index.js",
+  "module": "es/index.js",
+  "browser": {
+    "lib/react/NextIntlScript.js": "./lib/react/NextIntlScript.browser.js",
+    "lib/polyfill": "./lib/polyfill.browser.js",
+    "es/react/NextIntlScript.js": "./es/react/NextIntlScript.browser.js",
+    "es/polyfill": "./es/polyfill.browser.js"
+  },
+  "files": [
+    "lib",
+    "es"
+  ],
+  "scripts": {
+    "lint": "eslint . --ignore-path .gitignore",
+    "test": "jest",
+    "build:commonjs": "BABEL_ENV=commonjs babel src -d lib --delete-dir-on-start",
+    "build:es": "BABEL_ENV=es babel src -d es --delete-dir-on-start",
+    "build": "npm run build:commonjs && npm run build:es",
+    "prerelease": "npm t && npm run lint && npm run build",
+    "release": "standard-version",
+    "postrelease": "git push --follow-tags origin master && npm publish"
+  },
+  "keywords": [
+    "react",
+    "next",
+    "nextjs",
+    "locale",
+    "localization",
+    "intl",
+    "l10n",
+    "i18n",
+    "isomorphic",
+    "language"
+  ],
+  "author": "André Cruz <andre@moxy.studio>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:moxystudio/next-intl.git"
+  },
+  "dependencies": {
+    "@formatjs/intl-pluralrules": "^1.3.2",
+    "@formatjs/intl-relativetimeformat": "^4.4.1",
+    "accept-language-parser": "^1.5.0",
+    "canvas": "^2.6.0",
+    "hoist-non-react-statics": "^3.3.1",
+    "jsdom": "^15.2.1",
+    "memoize-one": "^5.1.1",
+    "p-cancelable": "^2.0.0",
+    "pico-signals": "^1.0.0",
+    "prop-types": "^15.7.2",
+    "universal-cookie": "^4.0.2"
+  },
+  "peerDependencies": {
+    "react": "^16.8.0",
+    "react-intl": "^3.6.0"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.6.4",
+    "@babel/core": "^7.6.4",
+    "@commitlint/cli": "^8.1.0",
+    "@commitlint/config-conventional": "^8.1.0",
+    "@moxy/jest-config": "^1.1.0",
+    "@testing-library/react": "^9.3.2",
+    "babel-jest": "^24.9.0",
+    "babel-preset-moxy": "^3.2.0",
+    "delay": "^4.3.0",
+    "eslint": "^6.6.0",
+    "eslint-config-moxy": "^9.1.1",
+    "husky": "^3.0.5",
+    "jest": "^24.9.0",
+    "lint-staged": "^9.2.5",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "react-intl": "^3.6.0",
+    "standard-version": "^7.0.0"
+  }
+}

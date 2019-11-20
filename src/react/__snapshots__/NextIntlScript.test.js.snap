@@ -1,0 +1,5 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`should concatenate with the passed assetPrefix 1`] = `"(function(){if(!Intl.PluralRules||!Intl.RelativeTimeFormat){var e=document.currentScript,t=document.createElement(\\"script\\");t.src=\\"https://my.cdn.com/_next/static/chunks/intl-polyfill.js\\",e.parentNode.insertBefore(t,e.nextSibling)}})();"`;
+
+exports[`should render a script tag with conditional loading of the polyfill correctly 1`] = `"(function(){if(!Intl.PluralRules||!Intl.RelativeTimeFormat){var e=document.currentScript,t=document.createElement(\\"script\\");t.src=\\"/_next/static/chunks/intl-polyfill.js\\",e.parentNode.insertBefore(t,e.nextSibling)}})();"`;
