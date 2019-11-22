@@ -29,7 +29,17 @@ All the polyfilling will be taken care by this library automatically, so that yo
 
 ## Setup
 
-#### 1. Create a root folder named `intl` with the following structure:
+#### 1 Add the plugin to your `next.config.js`
+
+```js
+const withNextIntl = require('@moxy/next-intl/plugin');
+
+module.exports = withNextIntl()({ ...nextConfig });
+```
+
+This plugin will make some [modifications](src/plugin.js) to your webpack config to circuvent a few issues related to `jsdom`, which is a runtime dependency of `react-intl` for the server.
+
+#### 2. Create a root folder named `intl` with the following structure:
 
 ```
 intl/
@@ -71,7 +81,7 @@ The `messages/en-US.json` file contains the messages for the `en-US` locale:
 }
 ```
 
-#### 2. Include `<NextIntlScript>` in `pages/_document.js`:
+#### 3. Include `<NextIntlScript>` in `pages/_document.js`:
 
 ```js
 import React from 'react';
@@ -96,7 +106,7 @@ export default class MyDocument extends Document {
 }
 ```
 
-#### 3. Wrap your app with `withNextIntlSetup` in `pages/_app.js`:
+#### 4. Wrap your app with `withNextIntlSetup` in `pages/_app.js`:
 
 ```js
 import React from 'react';
@@ -131,7 +141,7 @@ class MyApp extends App {
 export default withNextIntlSetup(nextIntlConfig)(MyApp);
 ```
 
-#### 4. Ready!
+#### 5. Ready!
 
 You may now use [`react-intl`](https://www.npmjs.com/package/react-intl) as you normally would. Moreover, you will receive the current locale in your pages' `getInitialProps` static function.
 
