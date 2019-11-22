@@ -12,7 +12,8 @@
   },
   "files": [
     "lib",
-    "es"
+    "es",
+    "plugin.js"
   ],
   "scripts": {
     "lint": "eslint . --ignore-path .gitignore",
