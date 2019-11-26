@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.1](https://github.com/moxystudio/next-intl/compare/v1.1.0...v1.1.1) (2019-11-26)
+
+
+### Bug Fixes
+
+* declare next as a peer dependency ([ba9d487](https://github.com/moxystudio/next-intl/commit/ba9d487fba96ef2c2323d616c2085e8f0b95d86c))
+
 ## [1.1.0](https://github.com/moxystudio/next-intl/compare/v1.0.0...v1.1.0) (2019-11-22)
 
 
