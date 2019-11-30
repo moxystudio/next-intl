@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.3](https://github.com/moxystudio/next-intl/compare/v1.1.2...v1.1.3) (2019-11-30)
+
+
+### Bug Fixes
+
+* make it work even if the .next folder is not deleted ([f59815c](https://github.com/moxystudio/next-intl/commit/f59815cc816e240ad28b9c8b35b2634cea3a8ea2))
+
 ### [1.1.2](https://github.com/moxystudio/next-intl/compare/v1.1.1...v1.1.2) (2019-11-30)
 
 
