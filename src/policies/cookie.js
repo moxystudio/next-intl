@@ -53,6 +53,11 @@ const createPolicy = (options) => {
 
             cookies.set(options.name, locale.id, options);
 
+            /* istanbul ignore if */
+            if (typeof BroadcastChannel === 'undefined') {
+                return () => {};
+            }
+
             const broadcastChannel = new BroadcastChannel(BROADCAST_CHANNEL_NAME);
 
             broadcastChannel.postMessage({ uid, localeId: locale.id });
