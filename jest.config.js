@@ -11,6 +11,7 @@ module.exports = compose([
             ...coveragePathIgnorePatterns,
             path.resolve(__dirname, 'src/polyfill.js'),
             path.resolve(__dirname, 'src/polyfill.browser.js'),
+            path.resolve(__dirname, 'src/plugin/NextIntlWebpackPlugin.js'),
         ];
 
         return config;

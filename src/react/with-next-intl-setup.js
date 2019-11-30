@@ -12,7 +12,7 @@ const withNextIntlSetup = (config) => (WrappedApp) => {
             nextIntlProviderProps: PropTypes.object,
         };
 
-        static displayName = `withNextIntlSetup(${WrappedApp.displayName || WrappedApp.name || 'App'})`;
+        static displayName = `withNextIntlSetup(${WrappedApp.displayName || WrappedApp.name || /* istanbul ignore next */ 'App'})`;
 
         static async getInitialProps(appCtx) {
             let nextIntlProviderProps;

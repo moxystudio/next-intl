@@ -90,14 +90,12 @@ import { NextIntlScript } from '@moxy/next-intl';
 
 export default class MyDocument extends Document {
     render() {
-        const { assetPrefix } = this.props.__NEXT_DATA__;
-
         return (
             <Html>
                 <Head />
                 <body>
                     <Main />
-                    <NextIntlScript assetPrefix={ assetPrefix } />
+                    <NextIntlScript />
                     <NextScript />
                 </body>
             </Html>
@@ -173,14 +171,6 @@ export default class Homepage extends Component {
 `<NextIntlScript>` is a React component responsible for conditionally loading [Intl polyfills and locale data](https://github.com/formatjs/react-intl/blob/master/docs/Getting-Started.md#runtime-requirements) if necessary.
 
 Please check the [setup](#setup) guide to know how to set it up.
-
-Available props:
-
-#### assexPrefix
-
-Type: `string`
-
-The configured assetPrefix if any.
 
 ### withNextIntlSetup(config)(App)
 

@@ -1,14 +1,9 @@
-import fs from 'fs';
 import React from 'react';
 import { render } from '@testing-library/react';
 import NextIntlScript from './NextIntlScript';
 
-jest.mock('fs', () => ({
-    readFileSync: jest.fn(),
-}));
-
-beforeAll(() => {
-    global.__webpack_public_path__ = '/_next/'; // eslint-disable-line
+beforeEach(() => {
+    global.__NEXT_INTL_POLYFILL_URL__ = 'intl-polyfill.js';
 });
 
 afterEach(() => {
@@ -16,14 +11,6 @@ afterEach(() => {
 });
 
 it('should render a script tag with conditional loading of the polyfill correctly', () => {
-    fs.readFileSync.mockImplementation(() => (
-        JSON.stringify({
-            '@formatjs/intl-pluralrules/polyfill-locales': [
-                { publicPath: 'static/chunks/intl-polyfill.js' },
-            ],
-        })),
-    );
-
     const { container } = render(
         <NextIntlScript />,
     );
@@ -33,32 +20,14 @@ it('should render a script tag with conditional loading of the polyfill correctl
     expect(script.innerHTML).toMatchSnapshot();
 });
 
-it('should concatenate with the passed assetPrefix', () => {
-    fs.readFileSync.mockImplementation(() => (
-        JSON.stringify({
-            '@formatjs/intl-pluralrules/polyfill-locales': [
-                { publicPath: 'static/chunks/intl-polyfill.js' },
-            ],
-        })),
-    );
-
-    const { container } = render(
-        <NextIntlScript assetPrefix="https://my.cdn.com" />,
-    );
-
-    const script = container.querySelector('script');
-
-    expect(script.innerHTML).toMatchSnapshot();
-});
-
 it('should fail if unable to find polyfill chunk', () => {
-    jest.spyOn(console, 'error').mockImplementation(() => {});
+    delete global.__NEXT_INTL_POLYFILL_URL__;
 
-    fs.readFileSync.mockImplementation(() => '{}');
+    jest.spyOn(console, 'error').mockImplementation(() => {});
 
     expect(() => {
         render(
             <NextIntlScript />,
         );
-    }).toThrow(new Error('Could not find intl-polyfill chunk in .next/react-loadable-manifest.json'));
+    }).toThrow(new Error('Could not locale the polyfill URL, did you forget to enable the plugin in the next.config.js file?'));
 });
