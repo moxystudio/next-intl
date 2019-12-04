@@ -299,7 +299,7 @@ The higher order component version of [`<NextIntlConsumer>`](#nextintlconsumer),
 
 ```js
 import { useCallback } from 'react';
-import { useNextIntl } from '@moxy/next-intl';
+import { withNextIntl } from '@moxy/next-intl';
 
 const LanguageSelect = ({ nextIntl }) => {
     const { locales, locale, changeLocale } = nextIntl;
@@ -307,7 +307,7 @@ const LanguageSelect = ({ nextIntl }) => {
     // ...
 };
 
-export default LanguageSelect;
+export default withNextIntl(LanguageSelect);
 ```
 
 ### Policies
