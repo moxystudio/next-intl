@@ -276,13 +276,13 @@ import { useNextIntl } from '@moxy/next-intl';
 const LanguageSelect = () => {
     const { locales, locale, changeLocale } = useNextIntl();
 
-    const handleHange = useCallback(
+    const handleChange = useCallback(
         (event) => changeLocale(event.target.value),
         [changeLocale],
     );
 
     return (
-        <select value={ locale.id } onChange={ handleHange }>
+        <select value={ locale.id } onChange={ handleChange }>
             { locales.map(({ id, name }) => (
                 <option key={ id } value={ id }>{ name }</option>
             )) }
