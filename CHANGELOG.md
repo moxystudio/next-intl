@@ -2,6 +2,15 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.4](https://github.com/moxystudio/next-intl/compare/v1.1.3...v1.1.4) (2019-12-09)
+
+
+### Bug Fixes
+
+* change depth to 1 to circuvent an error on some CI runners ([8da98e0](https://github.com/moxystudio/next-intl/commit/8da98e0297e0ed77fe1eadc262222b09b606f6a3))
+* fix typo on useNextIntl() section ([#5](https://github.com/moxystudio/next-intl/issues/5)) ([b156440](https://github.com/moxystudio/next-intl/commit/b156440856234ddad55c5bc95834a9e35ef995db))
+* fix withNextIntl HOC example ([#6](https://github.com/moxystudio/next-intl/issues/6)) ([542e3b5](https://github.com/moxystudio/next-intl/commit/542e3b5dbe04cb5251b9bf4314e5280877c53d8a))
+
 ### [1.1.3](https://github.com/moxystudio/next-intl/compare/v1.1.2...v1.1.3) (2019-11-30)
 
 
