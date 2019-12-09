@@ -70,7 +70,7 @@ export default class NextIntlWebpackPlugin {
             persistent: true,
             awaitWriteFinish: true,
             ignoreInitial: true,
-            depth: 0,
+            depth: 1,
         });
 
         watcher.on('addDir', (filepath) => {
