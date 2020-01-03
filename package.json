@@ -23,7 +23,7 @@
     "build": "npm run build:commonjs && npm run build:es",
     "prerelease": "npm t && npm run lint && npm run build",
     "release": "standard-version",
-    "postrelease": "git push --follow-tags origin master && npm publish"
+    "postrelease": "git push --follow-tags origin HEAD && npm publish"
   },
   "keywords": [
     "react",
