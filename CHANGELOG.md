@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.5](https://github.com/moxystudio/next-intl/compare/v1.1.4...v1.1.5) (2020-01-07)
+
+
+### Bug Fixes
+
+* change locales, policies & initialData of the provider to required ([#9](https://github.com/moxystudio/next-intl/issues/9)) ([8fbe363](https://github.com/moxystudio/next-intl/commit/8fbe3636a8cbf6df899d2210072830c4b4237a20))
+
 ### [1.1.4](https://github.com/moxystudio/next-intl/compare/v1.1.3...v1.1.4) (2019-12-09)
 
 
