@@ -12,17 +12,17 @@ export default class NextIntlProvider extends PureComponent {
             name: PropTypes.string.isRequired,
             id: PropTypes.string.isRequired,
             loadMessages: PropTypes.func.isRequired,
-        })),
+        })).isRequired,
         policies: PropTypes.arrayOf(PropTypes.shape({
             match: PropTypes.func.isRequired,
             watch: PropTypes.func,
             save: PropTypes.func,
             act: PropTypes.func,
-        })),
+        })).isRequired,
         initialData: PropTypes.shape({
             localeId: PropTypes.string.isRequired,
             messages: PropTypes.object.isRequired,
-        }),
+        }).isRequired,
         onChange: PropTypes.func,
         children: PropTypes.node,
     };
