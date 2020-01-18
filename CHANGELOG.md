@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.7](https://github.com/moxystudio/next-intl/compare/v1.1.6...v1.1.7) (2020-01-18)
+
+
+### Bug Fixes
+
+* fix NextIntlWebpackPlugin hanging on client errors ([e426394](https://github.com/moxystudio/next-intl/commit/e4263948cbb706dc219449154ee8f4b47e259380))
+
 ### [1.1.6](https://github.com/moxystudio/next-intl/compare/v1.1.5...v1.1.6) (2020-01-07)
 
 ### [1.1.5](https://github.com/moxystudio/next-intl/compare/v1.1.4...v1.1.5) (2020-01-07)
