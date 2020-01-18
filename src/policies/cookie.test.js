@@ -24,10 +24,16 @@ afterEach(() => {
 });
 
 describe('match() - SS', () => {
+    // Besides mocking window, we must mock document because of universal cookie
     const globalWindow = window;
+    const globalDocument = document;
 
     beforeAll(() => {
         Object.defineProperty(global, 'window', {
+            value: undefined,
+            writable: true,
+        });
+        Object.defineProperty(global, 'document', {
             value: undefined,
             writable: true,
         });
@@ -35,6 +41,7 @@ describe('match() - SS', () => {
 
     afterAll(() => {
         global.window = globalWindow;
+        global.document = globalDocument;
     });
 
     it('should match cookie against available locales', () => {

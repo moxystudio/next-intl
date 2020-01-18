@@ -1,113 +1,78 @@
 import path from 'path';
-import fs, { promises as pFs } from 'fs';
-import chokidar from 'chokidar';
+import { promises as pFs } from 'fs';
 import { ConcatSource } from 'webpack-sources';
+import pDefer from 'p-defer';
 import { REACT_LOADABLE_MANIFEST } from 'next/dist/next-server/lib/constants';
 
 export default class NextIntlWebpackPlugin {
+    static clientDeferred;
+
     distDir;
     assetPrefix;
 
     manifestPath;
-    initialManifestMtime;
-    waitForManifestPromise;
+    polyfillUrl;
 
-    constructor(nextConfig) {
+    constructor(isServer, nextConfig) {
+        this.isServer = isServer;
         this.distDir = nextConfig.distDir;
         this.assetPrefix = nextConfig.assetPrefix;
 
         this.manifestPath = path.join(this.distDir, REACT_LOADABLE_MANIFEST);
-        this.initialManifestMtime = this.getLoadableManifestMtime(this.manifestPath);
     }
 
     apply(compiler) {
-        compiler.hooks.afterPlugins.tap('NextIntlPlugin', () => {
-            const currentManifestMtime = this.getLoadableManifestMtime();
+        if (!this.isServer) {
+            NextIntlWebpackPlugin.clientDeferred = pDefer();
 
-            // Decide whether we need to wait for the manifest file to be written or not
-            // We only need to wait if there's no manifest yet or if it was unchanged
-            if (!currentManifestMtime || this.initialManifestMtime === currentManifestMtime) {
-                this.waitForManifestPromise = this.waitForManifest();
-            }
-        });
-
-        compiler.hooks.emit.tapPromise('NextIntlPlugin', async (compilation) => {
-            await this.waitForManifestPromise;
-
-            const polyfillUrl = await this.readPolyfillUrlFromManifest();
-            const polyfillUrlCode = `__NEXT_INTL_POLYFILL_URL__ = ${JSON.stringify(polyfillUrl)};`;
-
-            compilation.chunks
-            .filter((chunk) => chunk.canBeInitial())
-            .reduce((files, chunk) => {
-                files.push(...chunk.files);
-
-                return files;
-            }, [])
-            .forEach((file) => {
-                compilation.assets[file] = new ConcatSource(polyfillUrlCode, compilation.assets[file]);
+            compiler.hooks.failed.tap('NextIntlPlugin', (err) => {
+                NextIntlWebpackPlugin.clientDeferred.reject(err);
             });
-        });
-    }
 
-    getLoadableManifestMtime() {
-        let stats;
+            compiler.hooks.done.tap('NextIntlPlugin', (stats) => {
+                if (stats.hasErrors()) {
+                    NextIntlWebpackPlugin.clientDeferred.reject(new Error('Client-side compilation has errors, fix them first'));
+                } else {
+                    NextIntlWebpackPlugin.clientDeferred.resolve();
+                }
+            });
+        } else {
+            compiler.hooks.emit.tapPromise('NextIntlPlugin', async (compilation) => {
+                await NextIntlWebpackPlugin.clientDeferred.promise;
 
-        try {
-            stats = fs.statSync(path.join(this.distDir, REACT_LOADABLE_MANIFEST));
-        } catch (err) {
-            return null;
-        }
+                const polyfillUrl = await this.readPolyfillUrlFromManifest();
 
-        return stats.mtimeMs;
-    }
+                compilation.chunks
+                .filter((chunk) => chunk.canBeInitial())
+                .reduce((files, chunk) => {
+                    files.push(...chunk.files);
 
-    async waitForManifest() {
-        const watcher = chokidar.watch([
-            '.',
-            this.distDir,
-        ], {
-            persistent: true,
-            awaitWriteFinish: true,
-            ignoreInitial: true,
-            depth: 1,
-        });
+                    return files;
+                }, [])
+                .forEach((file) => {
+                    const polyfillUrlCode = `__NEXT_INTL_POLYFILL_URL__ = ${JSON.stringify(polyfillUrl)};`;
 
-        watcher.on('addDir', (filepath) => {
-            if (filepath === this.distDir) {
-                watcher.add(filepath);
-            }
-        });
-
-        try {
-            await new Promise((resolve) => {
-                watcher.on('add', (filepath) => {
-                    if (filepath === this.manifestPath) {
-                        resolve(filepath);
-                    }
-                });
-
-                watcher.on('change', (filepath) => {
-                    if (filepath === this.manifestPath) {
-                        resolve(filepath);
-                    }
+                    compilation.assets[file] = new ConcatSource(polyfillUrlCode, compilation.assets[file]);
                 });
             });
-        } finally {
-            watcher.close();
         }
     }
 
     async readPolyfillUrlFromManifest() {
-        const manifestContents = await pFs.readFile(this.manifestPath);
-        const manifestJson = JSON.parse(manifestContents);
+        // We may cache the `polyfillUrl` because it doesn't change between compilations in watch mode
+        if (!this.polyfillUrl) {
+            const manifestContents = await pFs.readFile(this.manifestPath);
+            const manifestJson = JSON.parse(manifestContents);
 
-        const polyfillPublicPath = manifestJson['@formatjs/intl-pluralrules/polyfill-locales']?.[0]?.publicPath;
+            const polyfillPublicPath = manifestJson['@formatjs/intl-pluralrules/polyfill-locales']?.[0]?.publicPath;
 
-        if (!polyfillPublicPath) {
-            throw new Error(`Could not find intl-polyfill chunk in ${this.manifestPath}`);
+            if (!polyfillPublicPath) {
+                throw new Error(`Could not find intl-polyfill chunk in ${this.manifestPath}, did you forgot to wrap your app with 'withNextIntlSetup'?'`);
+            }
+
+            this.polyfillUrl = `${this.assetPrefix}/_next/${polyfillPublicPath}`;
         }
 
-        return `${this.assetPrefix}/_next/${polyfillPublicPath}`;
+        return this.polyfillUrl;
     }
 }

@@ -29,5 +29,5 @@ it('should fail if unable to find polyfill chunk', () => {
         render(
             <NextIntlScript />,
         );
-    }).toThrow(new Error('Could not locale the polyfill URL, did you forget to enable the plugin in the next.config.js file?'));
+    }).toThrow(new Error('Could not locale the polyfill URL, did you forgot to enable the plugin in the next.config.js file?'));
 });

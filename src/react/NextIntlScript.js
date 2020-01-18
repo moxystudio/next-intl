@@ -18,7 +18,7 @@ const buildScript = (polyfillChunkUrl) => `(function(){if(!Intl.PluralRules||!In
 
 const NextIntlScript = () => {
     if (typeof __NEXT_INTL_POLYFILL_URL__ === 'undefined') {
-        throw new Error('Could not locale the polyfill URL, did you forget to enable the plugin in the next.config.js file?');
+        throw new Error('Could not locale the polyfill URL, did you forgot to enable the plugin in the next.config.js file?');
     }
 
     const script = buildScript(__NEXT_INTL_POLYFILL_URL__);
