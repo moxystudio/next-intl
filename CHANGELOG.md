@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.8](https://github.com/moxystudio/next-intl/compare/v1.1.7...v1.1.8) (2020-01-22)
+
+
+### Bug Fixes
+
+* add to compilation error instead of throwing ([409bdda](https://github.com/moxystudio/next-intl/commit/409bddad8557164040d3dc09578e17eca0d9dd90))
+
 ### [1.1.7](https://github.com/moxystudio/next-intl/compare/v1.1.6...v1.1.7) (2020-01-18)
 
 
