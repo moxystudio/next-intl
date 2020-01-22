@@ -38,7 +38,13 @@ export default class NextIntlWebpackPlugin {
             });
         } else {
             compiler.hooks.emit.tapPromise('NextIntlPlugin', async (compilation) => {
-                await NextIntlWebpackPlugin.clientDeferred.promise;
+                try {
+                    await NextIntlWebpackPlugin.clientDeferred.promise;
+                } catch (err) {
+                    compilation.errors.push(err);
+
+                    return;
+                }
 
                 const polyfillUrl = await this.readPolyfillUrlFromManifest();
 
