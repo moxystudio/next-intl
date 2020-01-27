@@ -7,7 +7,7 @@ const withNextIntl = (WrappedComponent) => {
         const nextIntl = useNextIntl();
 
         return (
-            <WrappedComponent ref={ ref } { ...props } nextIntl={ nextIntl } />
+            <WrappedComponent ref={ ref } nextIntl={ nextIntl } { ...props } />
         );
     });
 
