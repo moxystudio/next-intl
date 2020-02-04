@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.9](https://github.com/moxystudio/next-intl/compare/v1.1.8...v1.1.9) (2020-02-04)
+
+
+### Bug Fixes
+
+* fix initialData being required ([092f2ab](https://github.com/moxystudio/next-intl/commit/092f2abb00813b0d53cde12df7257415b98a146b))
+* fix order of props spreading in hoc ([a8c106c](https://github.com/moxystudio/next-intl/commit/a8c106c5b0fe32d874fc4e7031b7e908b09e7912))
+
 ### [1.1.8](https://github.com/moxystudio/next-intl/compare/v1.1.7...v1.1.8) (2020-01-22)
 
 
