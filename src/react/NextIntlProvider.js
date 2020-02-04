@@ -22,7 +22,7 @@ export default class NextIntlProvider extends PureComponent {
         initialData: PropTypes.shape({
             localeId: PropTypes.string.isRequired,
             messages: PropTypes.object.isRequired,
-        }).isRequired,
+        }),
         onChange: PropTypes.func,
         children: PropTypes.node,
     };
@@ -74,6 +74,10 @@ export default class NextIntlProvider extends PureComponent {
     buildManager() {
         const { locales, policies, initialData } = this.props;
         const data = this.manager ? this.manager.toData() : initialData;
+
+        if (!data) {
+            throw new Error('Missing initialData prop on first render');
+        }
 
         this.manager?.destroy();
 

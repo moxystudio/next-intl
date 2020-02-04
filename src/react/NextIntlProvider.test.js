@@ -74,6 +74,21 @@ it('should pass any extraneous props to IntlProvider', () => {
     expect(element.textContent).toBe(appleMessage);
 });
 
+it('should fail if no initialData is provided on first render', () => {
+    jest.spyOn(console, 'error').mockImplementation(() => {});
+
+    expect(() => {
+        render(
+            <NextIntlProvider
+                locales={ locales }
+                policies={ policies }
+                textComponent={ 'p' }>
+                <FormattedMessage id="apple" />
+            </NextIntlProvider>,
+        );
+    }).toThrow('Missing initialData prop on first render');
+});
+
 it('should reconstruct the manager each time the locales change', () => {
     const { rerender, queryByText } = render(
         <NextIntlProvider
