@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.10](https://github.com/moxystudio/next-intl/compare/v1.1.9...v1.1.10) (2020-02-04)
+
+
+### Bug Fixes
+
+* initial props not staying persistent after first render ([eea9661](https://github.com/moxystudio/next-intl/commit/eea9661a6f9d5ef18738215d66a74b45558524e0))
+
 ### [1.1.9](https://github.com/moxystudio/next-intl/compare/v1.1.8...v1.1.9) (2020-02-04)
 
 
