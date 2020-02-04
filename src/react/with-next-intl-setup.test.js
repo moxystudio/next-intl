@@ -79,6 +79,23 @@ describe('getInitialProps SSR', () => {
 });
 
 describe('getInitialProps - CS', () => {
+    it('should keep initial props persistent after the first render', async () => {
+        const appContext = { ctx: {} };
+
+        const MyApp = () => <FormattedMessage id="apple" />;
+        const EnhancedMyApp = withNextIntlSetup({ locales, policies })(MyApp);
+
+        const nextIntlProviderProps = { initialData };
+
+        render(
+            <EnhancedMyApp nextIntlProviderProps={ nextIntlProviderProps } />,
+        );
+
+        const initialProps = await EnhancedMyApp.getInitialProps(appContext);
+
+        expect(initialProps.nextIntlProviderProps).toEqual(nextIntlProviderProps);
+    });
+
     it('should inject locale into the page context', async () => {
         const appContext = { ctx: {} };
 
@@ -136,7 +153,7 @@ it('should setup the NextIntlProvider', async () => {
 
     const appleMessage = messages[initialData.localeId].apple;
 
-    expect(queryByText(appleMessage)).toBeDefined();
+    expect(queryByText(appleMessage)).toBeTruthy();
 });
 
 it('should spread any other props to the app component', async () => {
@@ -149,7 +166,7 @@ it('should spread any other props to the app component', async () => {
         <EnhancedMyApp nextIntlProviderProps={ nextIntlProviderProps } foo="bar" />,
     );
 
-    expect(queryByText('bar')).toBeDefined();
+    expect(queryByText('bar')).toBeTruthy();
 });
 
 it('should copy statics', () => {

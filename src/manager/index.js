@@ -56,7 +56,7 @@ const watch = (policies, callback) => {
     };
 };
 
-const getInitialData = async (locales, policies, ctx) => {
+export const getInitialData = async (locales, policies, ctx) => {
     const locale = match(locales, policies, ctx);
     const messages = await locale.loadMessages();
 
@@ -157,4 +157,3 @@ const createManager = (locales, policies, initialData) => {
 };
 
 export default createManager;
-export { getInitialData };

@@ -1,16 +1,21 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { render } from '@testing-library/react';
-import NextIntlProvider from './NextIntlProvider';
-import createManager from '../manager';
+import NextIntlProvider, { getInitialProps, toInitialProps } from './NextIntlProvider';
+import createManager, { getInitialData } from '../manager';
 
-jest.mock('../manager', () => jest.fn((...args) => {
-    const createManager = jest.requireActual('../manager').default;
-    const manager = createManager(...args);
+jest.mock('../manager', () => ({
+    __esModule: true,
+    ...jest.requireActual('../manager'),
+    default: jest.fn((...args) => {
+        const createManager = jest.requireActual('../manager').default;
+        const manager = createManager(...args);
 
-    jest.spyOn(manager, 'destroy');
+        jest.spyOn(manager, 'destroy');
 
-    return manager;
+        return manager;
+    }),
+    getInitialData: jest.fn(jest.requireActual('../manager').getInitialData),
 }));
 
 const messages = {
@@ -52,7 +57,7 @@ it('should setup IntlProvider with the correct locale and messages', () => {
 
     const appleMessage = messages[initialData.localeId].apple;
 
-    expect(queryByText(appleMessage)).toBeDefined();
+    expect(queryByText(appleMessage)).toBeTruthy();
 });
 
 it('should pass any extraneous props to IntlProvider', () => {
@@ -72,21 +77,6 @@ it('should pass any extraneous props to IntlProvider', () => {
 
     expect(element).toBeDefined();
     expect(element.textContent).toBe(appleMessage);
-});
-
-it('should fail if no initialData is provided on first render', () => {
-    jest.spyOn(console, 'error').mockImplementation(() => {});
-
-    expect(() => {
-        render(
-            <NextIntlProvider
-                locales={ locales }
-                policies={ policies }
-                textComponent={ 'p' }>
-                <FormattedMessage id="apple" />
-            </NextIntlProvider>,
-        );
-    }).toThrow('Missing initialData prop on first render');
 });
 
 it('should reconstruct the manager each time the locales change', () => {
@@ -113,7 +103,7 @@ it('should reconstruct the manager each time the locales change', () => {
     const appleMessage = messages[initialData.localeId].apple;
 
     expect(createManager).toHaveBeenCalledTimes(2);
-    expect(queryByText(appleMessage)).toBeDefined();
+    expect(queryByText(appleMessage)).toBeTruthy();
 });
 
 it('should reconstruct the manager each time the policies change', () => {
@@ -142,7 +132,7 @@ it('should reconstruct the manager each time the policies change', () => {
     const appleMessage = messages[initialData.localeId].apple;
 
     expect(createManager).toHaveBeenCalledTimes(2);
-    expect(queryByText(appleMessage)).toBeDefined();
+    expect(queryByText(appleMessage)).toBeTruthy();
 });
 
 it('should fail if locales changed but current locale does not exist', () => {
@@ -183,7 +173,7 @@ it('should rerender when locale changes', async () => {
 
     const appleMessage = messages['ru-RU'].apple;
 
-    expect(queryByText(appleMessage)).toBeDefined();
+    expect(queryByText(appleMessage)).toBeTruthy();
 });
 
 it('should destroy the manager when unmounted', () => {
@@ -201,4 +191,46 @@ it('should destroy the manager when unmounted', () => {
     const manager = createManager.mock.results[0].value;
 
     expect(manager.destroy).toHaveBeenCalledTimes(1);
+});
+
+describe('getInitialProps', () => {
+    it('should create the correct initial props', async () => {
+        const initialProps = await getInitialProps({
+            locales,
+            policies,
+        }, {});
+
+        expect(initialProps).toEqual({
+            initialData: {
+                localeId: locales[0].id,
+                messages: messages[locales[0].id],
+            },
+        });
+
+        expect(getInitialData).toHaveBeenCalledTimes(1);
+        expect(getInitialData).toHaveBeenCalledWith(locales, policies, {});
+    });
+});
+
+describe('toInitialProps', () => {
+    it('should return the correct initial props based on the provider', async () => {
+        const config = {
+            locales,
+            policies,
+        };
+
+        const initialProps = {
+            initialData: {
+                localeId: locales[0].id,
+                messages: messages[locales[0].id],
+            },
+        };
+
+        const provider = new NextIntlProvider({
+            ...config,
+            ...initialProps,
+        });
+
+        expect(toInitialProps(provider)).toEqual(initialProps);
+    });
 });
