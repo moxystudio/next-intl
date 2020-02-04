@@ -12,9 +12,9 @@ it('should add promises and wait for them all', async () => {
     pGroup.add(pDelay(75));
 
     pGroup.wait()
-    .then(() => {
-        waited = true;
-    });
+        .then(() => {
+            waited = true;
+        });
 
     expect(waited).toBe(false);
 
@@ -36,9 +36,9 @@ it('should add non-promise values', async () => {
     pGroup.add(null);
 
     pGroup.wait()
-    .then(() => {
-        waited = true;
-    });
+        .then(() => {
+            waited = true;
+        });
 
     expect(waited).toBe(false);
 
@@ -53,9 +53,9 @@ it('should reset, canceling all ongoing promises', async () => {
     let canceled = false;
 
     pGroup.add(pDelay(25))
-    .catch((err) => {
-        canceled = err.isCanceled;
-    });
+        .catch((err) => {
+            canceled = err.isCanceled;
+        });
 
     pGroup.reset();
 
@@ -75,7 +75,7 @@ it('should accept cancelable promises', async () => {
     });
 
     pGroup.add(promise)
-    .catch(() => {});
+        .catch(() => {});
 
     pGroup.reset();
 

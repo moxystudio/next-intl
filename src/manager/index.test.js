@@ -145,7 +145,7 @@ describe('manager', () => {
             };
 
             expect(() => createManager(locales, [], initialData))
-            .toThrow('Unknown locale id: it-IT');
+                .toThrow('Unknown locale id: it-IT');
         });
 
         it('should watch all policies', () => {

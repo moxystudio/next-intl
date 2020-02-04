@@ -4,7 +4,7 @@ module.exports = (api) => {
     return {
         ignore: process.env.NODE_ENV === 'test' ? [] : ['**/*.test.js'],
         presets: [
-            ['babel-preset-moxy/lib', { react: true }],
+            ['@moxy/babel-preset/lib', { react: true }],
         ],
     };
 };

@@ -49,17 +49,17 @@ export default class NextIntlWebpackPlugin {
                 const polyfillUrl = await this.readPolyfillUrlFromManifest();
 
                 compilation.chunks
-                .filter((chunk) => chunk.canBeInitial())
-                .reduce((files, chunk) => {
-                    files.push(...chunk.files);
+                    .filter((chunk) => chunk.canBeInitial())
+                    .reduce((files, chunk) => {
+                        files.push(...chunk.files);
 
-                    return files;
-                }, [])
-                .forEach((file) => {
-                    const polyfillUrlCode = `__NEXT_INTL_POLYFILL_URL__ = ${JSON.stringify(polyfillUrl)};`;
+                        return files;
+                    }, [])
+                    .forEach((file) => {
+                        const polyfillUrlCode = `__NEXT_INTL_POLYFILL_URL__ = ${JSON.stringify(polyfillUrl)};`;
 
-                    compilation.assets[file] = new ConcatSource(polyfillUrlCode, compilation.assets[file]);
-                });
+                        compilation.assets[file] = new ConcatSource(polyfillUrlCode, compilation.assets[file]);
+                    });
             });
         }
     }
