@@ -26,6 +26,8 @@ const initialData = {
     messages: messages[locales[0].id],
 };
 
+const Component = () => 'Hello world';
+
 describe('getInitialProps SSR', () => {
     const globalWindow = window;
 
@@ -44,7 +46,7 @@ describe('getInitialProps SSR', () => {
         const MyApp = () => null;
         const EnhancedMyApp = withNextIntlSetup({ locales, policies })(MyApp);
 
-        const initialProps = await EnhancedMyApp.getInitialProps({ ctx: {} });
+        const initialProps = await EnhancedMyApp.getInitialProps({ ctx: {}, Component });
 
         expect(initialProps.nextIntlProviderProps).toEqual({
             initialData: {
@@ -54,20 +56,24 @@ describe('getInitialProps SSR', () => {
         });
     });
 
-    it('should return the an object with the app props', async () => {
+    it('should return an object with the app props', async () => {
+        const appContext = { ctx: {}, Component };
+
         const MyApp = () => null;
 
-        MyApp.getInitialProps = () => ({ foo: 'bar' });
+        MyApp.getInitialProps = jest.fn(async () => ({ foo: 'bar' }));
 
         const EnhancedMyApp = withNextIntlSetup({ locales, policies })(MyApp);
 
-        const initialProps = await EnhancedMyApp.getInitialProps({ ctx: {} });
+        const initialProps = await EnhancedMyApp.getInitialProps(appContext);
 
+        expect(MyApp.getInitialProps).toHaveBeenCalledTimes(1);
+        expect(MyApp.getInitialProps).toHaveBeenCalledWith(appContext);
         expect(initialProps.appProps).toEqual({ foo: 'bar' });
     });
 
     it('should inject the locale into the page context', async () => {
-        const appContext = { ctx: {} };
+        const appContext = { ctx: {}, Component };
 
         const MyApp = () => null;
         const EnhancedMyApp = withNextIntlSetup({ locales, policies })(MyApp);
@@ -76,11 +82,28 @@ describe('getInitialProps SSR', () => {
 
         expect(appContext.ctx.locale).toEqual(locales[0]);
     });
+
+    it('should call page\'s getInitialProps', async () => {
+        const Component = () => 'Hello World';
+
+        Component.getInitialProps = jest.fn(async () => ({ foo: 'bar' }));
+
+        const appContext = { ctx: {}, Component };
+
+        const MyApp = () => null;
+        const EnhancedMyApp = withNextIntlSetup({ locales, policies })(MyApp);
+
+        const initialProps = await EnhancedMyApp.getInitialProps(appContext);
+
+        expect(Component.getInitialProps).toHaveBeenCalledTimes(1);
+        expect(Component.getInitialProps).toHaveBeenCalledWith(appContext.ctx);
+        expect(initialProps.appProps).toEqual({ pageProps: { foo: 'bar' } });
+    });
 });
 
 describe('getInitialProps - CS', () => {
     it('should keep initial props persistent after the first render', async () => {
-        const appContext = { ctx: {} };
+        const appContext = { ctx: {}, Component };
 
         const MyApp = () => <FormattedMessage id="apple" />;
         const EnhancedMyApp = withNextIntlSetup({ locales, policies })(MyApp);
@@ -97,7 +120,7 @@ describe('getInitialProps - CS', () => {
     });
 
     it('should inject locale into the page context', async () => {
-        const appContext = { ctx: {} };
+        const appContext = { ctx: {}, Component };
 
         const MyApp = () => null;
         const EnhancedMyApp = withNextIntlSetup({ locales, policies })(MyApp);
@@ -115,7 +138,7 @@ describe('getInitialProps - CS', () => {
 
     it('should inject new locale into the page context if it changed', async () => {
         let changeLocale;
-        const appContext = { ctx: {} };
+        const appContext = { ctx: {}, Component };
 
         const MyApp = () => {
             const nextIntl = useContext(NextIntlContext);

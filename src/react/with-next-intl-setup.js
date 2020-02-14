@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import hoistNonReactStatics from 'hoist-non-react-statics';
+import App from 'next/app';
 import NextIntlProvider, { getInitialProps, toInitialProps } from './NextIntlProvider';
 
 const withNextIntlSetup = (config) => (WrappedApp) => {
@@ -23,7 +24,7 @@ const withNextIntlSetup = (config) => (WrappedApp) => {
 
             appCtx.ctx.locale = locale;
 
-            const appProps = await WrappedApp.getInitialProps?.(appCtx);
+            const appProps = await (WrappedApp.getInitialProps ? WrappedApp.getInitialProps(appCtx) : App.getInitialProps(appCtx));
 
             return { appProps, nextIntlProviderProps };
         }
