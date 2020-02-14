@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.1.11](https://github.com/moxystudio/next-intl/compare/v1.1.10...v1.1.11) (2020-02-14)
+
+
+### Bug Fixes
+
+* fix page getInitialProps not being called ([d3ab91f](https://github.com/moxystudio/next-intl/commit/d3ab91f21e91c03b60fdbb3d83e73231acada843))
+
 ### [1.1.10](https://github.com/moxystudio/next-intl/compare/v1.1.9...v1.1.10) (2020-02-04)
 
 
