@@ -1,4 +1,5 @@
 const nextIntlPlugin = require('./');
+const NextIntlWebpackPlugin = require('./NextIntlWebpackPlugin');
 
 const webpackOptions = {
     isServer: true,
@@ -9,80 +10,14 @@ const webpackOptions = {
 };
 
 const createWebpackConfig = () => ({
-    module: {
-        rules: [
-            {
-                test: 'foo',
-                loader: 'foo-loader',
-            },
-        ],
-    },
-    externals: () => {},
     plugins: [],
 });
 
-it('should add a rule for canvas that uses null-loader', () => {
+it('should add NextIntlWebpackPlugin', () => {
     const config = nextIntlPlugin()().webpack(createWebpackConfig(), webpackOptions);
 
-    const rule = config.module.rules[0];
-
-    expect(rule.test).toBe(require.resolve('canvas'));
-    expect(rule.loader).toBe(require.resolve('null-loader'));
-});
-
-it('should add no canvas rule when not server', () => {
-    const config = nextIntlPlugin()().webpack(createWebpackConfig(), { ...webpackOptions, isServer: false });
-
-    expect(config.module.rules[0].test).toBe('foo');
-});
-
-it('should add ws\'s optional dependencies to externals', () => {
-    expect.assertions(4);
-
-    const config = nextIntlPlugin()().webpack(createWebpackConfig(), webpackOptions);
-
-    expect(config.externals).toHaveLength(2);
-
-    config.externals[0]('node_modules/ws/lib', 'bufferutil', (...args) => {
-        expect(args).toEqual([undefined, 'commonjs bufferutil']);
-    });
-    config.externals[0]('node_modules/ws/lib', 'utf-8-validate', (...args) => {
-        expect(args).toEqual([undefined, 'commonjs utf-8-validate']);
-    });
-    config.externals[0]('node_modules/foo', 'bufferutil', (...args) => {
-        expect(args).toHaveLength(0);
-    });
-});
-
-it('should still add ws\'s optional dependencies to externals if it\'s already an array', () => {
-    const originalConfig = {
-        ...createWebpackConfig(),
-        externals: ['foo'],
-    };
-
-    const config = nextIntlPlugin()().webpack(originalConfig, webpackOptions);
-
-    expect(config.externals).toHaveLength(2);
-    expect(typeof config.externals[0]).toBe('function');
-    expect(config.externals[1]).toBe('foo');
-});
-
-it('should still add ws\'s optional dependencies to externals if it\'s nullish', () => {
-    const originalConfig = {
-        ...createWebpackConfig(),
-        externals: undefined,
-    };
-
-    const config = nextIntlPlugin()().webpack(originalConfig, webpackOptions);
-
-    expect(config.externals).toHaveLength(1);
-    expect(typeof config.externals[0]).toBe('function');
-});
-
-it('should leave externals untouched when not server', () => {
-    const config = nextIntlPlugin()().webpack(createWebpackConfig(), { ...webpackOptions, isServer: false });
-
-    expect(typeof config.externals).toBe('function');
+    expect(config.plugins).toHaveLength(1);
+    expect(config.plugins[0].constructor).toBe(NextIntlWebpackPlugin);
 });
 
 it('should call nextConfig webpack if defined', () => {
