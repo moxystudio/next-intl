@@ -1,7 +1,5 @@
 import * as exports from '.';
 
-jest.mock('canvas', () => ({}));
-
 it('should export all functionality', () => {
     expect(exports).toHaveProperty('NextIntlScript');
     expect(exports).toHaveProperty('NextIntlProvider');
