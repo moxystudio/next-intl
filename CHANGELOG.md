@@ -2,6 +2,17 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.0.0](https://github.com/moxystudio/next-intl/compare/v1.1.11...v2.0.0) (2020-03-06)
+
+
+### ⚠ BREAKING CHANGES
+
+* react-intl v3 is no longer supported
+
+### Features
+
+* upgrade to react-intl v4 ([#11](https://github.com/moxystudio/next-intl/issues/11)) ([d27f85d](https://github.com/moxystudio/next-intl/commit/d27f85d8fce249b2657bdf795d0b42ab683914c7))
+
 ## [1.2.0](https://github.com/moxystudio/next-intl/compare/v1.1.11...v1.2.0) (2020-03-06)
 
 
