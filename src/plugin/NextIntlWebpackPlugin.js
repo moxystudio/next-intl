@@ -24,7 +24,7 @@ export default class NextIntlWebpackPlugin {
     apply(compiler) {
         if (!this.isServer) {
             NextIntlWebpackPlugin.clientDeferred = pDefer();
-            NextIntlWebpackPlugin.clientDeferred.catch(() => {});
+            NextIntlWebpackPlugin.clientDeferred.promise.catch(() => {});
 
             compiler.hooks.failed.tap('NextIntlPlugin', (err) => {
                 NextIntlWebpackPlugin.clientDeferred.reject(err);
