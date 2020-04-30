@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.2](https://github.com/moxystudio/next-intl/compare/v2.0.1...v2.0.2) (2020-04-30)
+
+
+### Bug Fixes
+
+* clientDeferred catch is not a function error ([#13](https://github.com/moxystudio/next-intl/issues/13)) ([11e4418](https://github.com/moxystudio/next-intl/commit/11e44187abe16a020db12919877055f291a0f245))
+
 ### [2.0.1](https://github.com/moxystudio/next-intl/compare/v2.0.0...v2.0.1) (2020-04-02)
 
 
