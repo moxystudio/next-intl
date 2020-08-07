@@ -1,6 +1,6 @@
-import createPGroup from './p-group';
 import pDelay from 'delay';
 import PCancelable from 'p-cancelable';
+import createPGroup from './p-group';
 
 it('should add promises and wait for them all', async () => {
     const pGroup = createPGroup();

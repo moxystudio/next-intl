@@ -1,3 +1,3 @@
-/* eslint-disable prefer-import/prefer-import-over-require */
+/* eslint-disable import/no-commonjs */
 
 module.exports = require('./lib/plugin');

@@ -1,8 +1,8 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { render } from '@testing-library/react';
-import NextIntlProvider, { getInitialProps, toInitialProps } from './NextIntlProvider';
 import createManager, { getInitialData } from '../manager';
+import NextIntlProvider, { getInitialProps, toInitialProps } from './NextIntlProvider';
 
 jest.mock('../manager', () => ({
     __esModule: true,

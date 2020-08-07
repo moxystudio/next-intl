@@ -1,5 +1,5 @@
-const nextIntlPlugin = require('./');
 const NextIntlWebpackPlugin = require('./NextIntlWebpackPlugin');
+const nextIntlPlugin = require('./');
 
 const webpackOptions = {
     isServer: true,

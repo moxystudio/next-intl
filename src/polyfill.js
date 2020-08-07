@@ -1,4 +1,6 @@
-/* eslint-disable prefer-import/prefer-import-over-require */
+/* global require */
+/* eslint-disable import/no-commonjs */
+/* istanbul ignore file */
 
 if (!Intl.PluralRules) {
     require('@formatjs/intl-pluralrules/polyfill-locales');

@@ -1,8 +1,8 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { RawIntlProvider, createIntl, createIntlCache } from 'react-intl';
-import NextIntlContext from './util/context';
 import createManager, { getInitialData } from '../manager';
+import NextIntlContext from './util/context';
 
 const Provider = NextIntlContext.Provider;
 

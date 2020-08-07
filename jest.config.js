@@ -1,19 +1,11 @@
-const path = require('path');
-const { compose, baseConfig, withRTL } = require('@moxy/jest-config');
+'use strict';
 
-module.exports = compose([
-    baseConfig,
-    withRTL,
-    (config) => {
-        const { coveragePathIgnorePatterns = [] } = config;
+const { compose, baseConfig } = require('@moxy/jest-config-base');
+const withWeb = require('@moxy/jest-config-web');
+const { withRTL } = require('@moxy/jest-config-testing-library');
 
-        config.coveragePathIgnorePatterns = [
-            ...coveragePathIgnorePatterns,
-            path.resolve(__dirname, 'src/polyfill.js'),
-            path.resolve(__dirname, 'src/polyfill.browser.js'),
-            path.resolve(__dirname, 'src/plugin/NextIntlWebpackPlugin.js'),
-        ];
-
-        return config;
-    },
-]);
+module.exports = compose(
+    baseConfig(),
+    withWeb(),
+    withRTL(),
+);

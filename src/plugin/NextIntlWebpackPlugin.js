@@ -1,3 +1,4 @@
+/* istanbul ignore file */
 import path from 'path';
 import { promises as pFs } from 'fs';
 import { ConcatSource } from 'webpack-sources';
@@ -39,15 +40,17 @@ export default class NextIntlWebpackPlugin {
             });
         } else {
             compiler.hooks.emit.tapPromise('NextIntlPlugin', async (compilation) => {
+                let polyfillUrl;
+
                 try {
                     await NextIntlWebpackPlugin.clientDeferred.promise;
+
+                    polyfillUrl = await this.readPolyfillUrlFromManifest();
                 } catch (err) {
                     compilation.errors.push(err);
 
                     return;
                 }
-
-                const polyfillUrl = await this.readPolyfillUrlFromManifest();
 
                 compilation.chunks
                     .filter((chunk) => chunk.canBeInitial())
@@ -71,13 +74,13 @@ export default class NextIntlWebpackPlugin {
             const manifestContents = await pFs.readFile(this.manifestPath);
             const manifestJson = JSON.parse(manifestContents);
 
-            const polyfillPublicPath = manifestJson['@formatjs/intl-pluralrules/polyfill-locales']?.[0]?.publicPath;
+            const polyfillFile = manifestJson['@formatjs/intl-pluralrules/polyfill-locales']?.[0]?.file;
 
-            if (!polyfillPublicPath) {
+            if (!polyfillFile) {
                 throw new Error(`Could not find intl-polyfill chunk in ${this.manifestPath}, did you forgot to wrap your app with 'withNextIntlSetup'?'`);
             }
 
-            this.polyfillUrl = `${this.assetPrefix}/_next/${polyfillPublicPath}`;
+            this.polyfillUrl = `${this.assetPrefix}/_next/${polyfillFile}`;
         }
 
         return this.polyfillUrl;

@@ -1,6 +1,6 @@
 import pDelay from 'delay';
-import createManager, { getInitialData } from '.';
 import createPGroup from './util/p-group';
+import createManager, { getInitialData } from '.';
 
 jest.mock('./util/p-group', () => jest.fn(() => ({
     wait: jest.fn(),

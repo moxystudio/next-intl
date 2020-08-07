@@ -23,7 +23,7 @@ describe('match()', () => {
     });
 });
 
-describe('WATCH()', () => {
+describe('watch()', () => {
     it('should not be present', () => {
         const policy = defaultPolicy();
 
