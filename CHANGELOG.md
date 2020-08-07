@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.1.0](https://github.com/moxystudio/next-intl/compare/v2.0.3...v2.1.0) (2020-08-07)
+
+
+### Features
+
+* support react-intl v5 ([8f84e90](https://github.com/moxystudio/next-intl/commit/8f84e90be8177b4bf40774010b448987b4c5b199))
+
 ### [2.0.3](https://github.com/moxystudio/next-intl/compare/v2.0.2...v2.0.3) (2020-08-07)
 
 
