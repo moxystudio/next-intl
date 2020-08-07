@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.3](https://github.com/moxystudio/next-intl/compare/v2.0.2...v2.0.3) (2020-08-07)
+
+
+### Bug Fixes
+
+* fix integration with recent Next.js versions ([7e0e338](https://github.com/moxystudio/next-intl/commit/7e0e338c7f15d71f879068a6bffa987cf35727a6))
+
 ### [2.0.2](https://github.com/moxystudio/next-intl/compare/v2.0.1...v2.0.2) (2020-04-30)
 
 
