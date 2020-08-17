@@ -5,8 +5,9 @@ import App from 'next/app';
 import NextIntlProvider, { getInitialProps, toInitialProps } from './NextIntlProvider';
 
 const withNextIntlSetup = (config) => (WrappedApp) => {
-    let locale;
-    let nextIntlProviderProps;
+    let _locale;
+    let _nextIntlProviderProps;
+    let _provider;
 
     class WithNextIntlSetup extends Component {
         static propTypes = {
@@ -17,12 +18,15 @@ const withNextIntlSetup = (config) => (WrappedApp) => {
         static displayName = `withNextIntlSetup(${WrappedApp.displayName || WrappedApp.name || /* istanbul ignore next */ 'App'})`;
 
         static async getInitialProps(appCtx) {
-            if (typeof window === 'undefined') {
-                nextIntlProviderProps = await getInitialProps(config, appCtx.ctx);
-                locale = config.locales.find(({ id }) => id === nextIntlProviderProps.initialData.localeId);
-            }
+            const nextIntlProviderProps = _nextIntlProviderProps ?? await getInitialProps(config, appCtx.ctx);
+            const locale = _locale ?? config.locales.find(({ id }) => id === nextIntlProviderProps.initialData.localeId);
 
             appCtx.ctx.locale = locale;
+
+            if (typeof window !== 'undefined') {
+                _nextIntlProviderProps = nextIntlProviderProps;
+                _locale = locale;
+            }
 
             const appProps = await (WrappedApp.getInitialProps ? WrappedApp.getInitialProps(appCtx) : App.getInitialProps(appCtx));
 
@@ -44,16 +48,19 @@ const withNextIntlSetup = (config) => (WrappedApp) => {
         }
 
         providerRef = (provider) => {
+            _provider = provider;
+
             if (provider) {
-                nextIntlProviderProps = toInitialProps(provider);
-                locale = provider.getValue().locale;
+                _nextIntlProviderProps = toInitialProps(provider);
+                _locale = provider.getValue().locale;
             } else {
-                nextIntlProviderProps = locale = undefined;
+                _nextIntlProviderProps = _locale = undefined;
             }
         };
 
-        handleChange = ({ locale: newLocale }) => {
-            locale = newLocale;
+        handleChange = () => {
+            _nextIntlProviderProps = toInitialProps(_provider);
+            _locale = _provider.getValue().locale;
         };
     }
 
