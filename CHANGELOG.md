@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.2.0](https://github.com/moxystudio/next-intl/compare/v2.1.1...v2.2.0) (2020-08-28)
+
+
+### Features
+
+* improve performance when pages are using getServerSideProps ([0758392](https://github.com/moxystudio/next-intl/commit/075839242fb28812a6dc721ce9180fe3fe78ad3e))
+
 ### [2.1.1](https://github.com/moxystudio/next-intl/compare/v2.1.0...v2.1.1) (2020-08-17)
 
 
