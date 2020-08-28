@@ -1,8 +1,8 @@
 import React from 'react';
 import { FormattedMessage } from 'react-intl';
 import { render } from '@testing-library/react';
-import createManager, { getInitialData } from '../manager';
-import NextIntlProvider, { getInitialProps, toInitialProps } from './NextIntlProvider';
+import createManager from '../manager';
+import NextIntlProvider from './NextIntlProvider';
 
 jest.mock('../manager', () => ({
     __esModule: true,
@@ -135,7 +135,7 @@ it('should reconstruct the manager each time the policies change', () => {
     expect(queryByText(appleMessage)).toBeTruthy();
 });
 
-it('should fail if locales changed but current locale does not exist', () => {
+it('should throw if locales changed but current locale does not exist', () => {
     jest.spyOn(console, 'error').mockImplementation(() => {});
 
     const { rerender } = render(
@@ -191,46 +191,4 @@ it('should destroy the manager when unmounted', () => {
     const manager = createManager.mock.results[0].value;
 
     expect(manager.destroy).toHaveBeenCalledTimes(1);
-});
-
-describe('getInitialProps', () => {
-    it('should create the correct initial props', async () => {
-        const initialProps = await getInitialProps({
-            locales,
-            policies,
-        }, {});
-
-        expect(initialProps).toEqual({
-            initialData: {
-                localeId: locales[0].id,
-                messages: messages[locales[0].id],
-            },
-        });
-
-        expect(getInitialData).toHaveBeenCalledTimes(1);
-        expect(getInitialData).toHaveBeenCalledWith(locales, policies, {});
-    });
-});
-
-describe('toInitialProps', () => {
-    it('should return the correct initial props based on the provider', async () => {
-        const config = {
-            locales,
-            policies,
-        };
-
-        const initialProps = {
-            initialData: {
-                localeId: locales[0].id,
-                messages: messages[locales[0].id],
-            },
-        };
-
-        const provider = new NextIntlProvider({
-            ...config,
-            ...initialProps,
-        });
-
-        expect(toInitialProps(provider)).toEqual(initialProps);
-    });
 });

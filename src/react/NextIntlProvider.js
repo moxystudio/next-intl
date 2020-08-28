@@ -1,7 +1,7 @@
 import React, { PureComponent } from 'react';
 import PropTypes from 'prop-types';
 import { RawIntlProvider, createIntl, createIntlCache } from 'react-intl';
-import createManager, { getInitialData } from '../manager';
+import createManager from '../manager';
 import NextIntlContext from './util/context';
 
 const Provider = NextIntlContext.Provider;
@@ -22,7 +22,7 @@ export default class NextIntlProvider extends PureComponent {
         initialData: PropTypes.shape({
             localeId: PropTypes.string.isRequired,
             messages: PropTypes.object.isRequired,
-        }).isRequired,
+        }),
         onChange: PropTypes.func,
         children: PropTypes.node,
     };
@@ -99,17 +99,3 @@ export default class NextIntlProvider extends PureComponent {
         };
     }
 }
-
-export const toInitialProps = (provider) => {
-    const initialData = provider?.manager.toData();
-
-    return { initialData };
-};
-
-export const getInitialProps = async (config, ctx) => {
-    const { locales, policies } = config;
-
-    const initialData = await getInitialData(locales, policies, ctx);
-
-    return { initialData };
-};

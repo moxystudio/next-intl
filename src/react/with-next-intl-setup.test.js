@@ -24,45 +24,30 @@ const policies = [
 const Component = () => 'Hello world';
 
 describe('getInitialProps', () => {
-    it('should return an object with the nextIntlProviderProps', async () => {
+    it('should return an object with nextIntlInitialData', async () => {
         const MyApp = () => null;
         const EnhancedMyApp = withNextIntlSetup({ locales, policies })(MyApp);
 
         const initialProps = await EnhancedMyApp.getInitialProps({ ctx: {}, Component });
 
-        expect(initialProps.nextIntlProviderProps).toEqual({
-            initialData: {
+        expect(initialProps).toEqual({
+            pageProps: {},
+            nextIntlInitialData: {
                 localeId: locales[0].id,
                 messages: messages[locales[0].id],
             },
         });
     });
 
-    it('should return an object with the app props', async () => {
-        const appContext = { ctx: {}, Component };
-
-        const MyApp = () => null;
-
-        MyApp.getInitialProps = jest.fn(async () => ({ foo: 'bar' }));
-
-        const EnhancedMyApp = withNextIntlSetup({ locales, policies })(MyApp);
-
-        const initialProps = await EnhancedMyApp.getInitialProps(appContext);
-
-        expect(MyApp.getInitialProps).toHaveBeenCalledTimes(1);
-        expect(MyApp.getInitialProps).toHaveBeenCalledWith(appContext);
-        expect(initialProps.appProps).toEqual({ foo: 'bar' });
-    });
-
     it('should inject locale into the page context', async () => {
-        const appContext = { ctx: {}, Component };
+        const appCtx = { ctx: {}, Component };
 
         const MyApp = () => null;
         const EnhancedMyApp = withNextIntlSetup({ locales, policies })(MyApp);
 
-        await EnhancedMyApp.getInitialProps(appContext);
+        await EnhancedMyApp.getInitialProps(appCtx);
 
-        expect(appContext.ctx.locale).toEqual(locales[0]);
+        expect(appCtx.ctx.locale).toEqual(locales[0]);
     });
 
     it('should call page\'s getInitialProps', async () => {
@@ -70,26 +55,36 @@ describe('getInitialProps', () => {
 
         Component.getInitialProps = jest.fn(async () => ({ foo: 'bar' }));
 
-        const appContext = { ctx: {}, Component };
+        const appCtx = { ctx: {}, Component };
 
         const MyApp = () => null;
         const EnhancedMyApp = withNextIntlSetup({ locales, policies })(MyApp);
 
-        const initialProps = await EnhancedMyApp.getInitialProps(appContext);
+        const initialProps = await EnhancedMyApp.getInitialProps(appCtx);
 
         expect(Component.getInitialProps).toHaveBeenCalledTimes(1);
-        expect(Component.getInitialProps).toHaveBeenCalledWith(appContext.ctx);
-        expect(initialProps.appProps).toEqual({ pageProps: { foo: 'bar' } });
+        expect(Component.getInitialProps).toHaveBeenCalledWith(appCtx.ctx);
+        expect(initialProps).toEqual({
+            pageProps: { foo: 'bar' },
+            nextIntlInitialData: {
+                localeId: locales[0].id,
+                messages: messages[locales[0].id],
+            },
+        });
     });
 
     describe('on SS', () => {
         const globalWindow = window;
+        let withNextIntlSetup;
 
         beforeAll(() => {
             Object.defineProperty(global, 'window', {
                 value: undefined,
                 writable: true,
             });
+
+            jest.resetModules();
+            withNextIntlSetup = require('./with-next-intl-setup');
         });
 
         afterAll(() => {
@@ -104,29 +99,60 @@ describe('getInitialProps', () => {
             const MyApp = () => null;
             const EnhancedMyApp = withNextIntlSetup({ locales, policies })(MyApp);
 
-            const initialProps1 = await EnhancedMyApp.getInitialProps({ ctx: {}, Component });
-
-            expect(initialProps1.nextIntlProviderProps).toEqual({
-                initialData: {
-                    localeId: locales[0].id,
-                    messages: messages[locales[0].id],
+            const initialProps1 = await EnhancedMyApp.getInitialProps({
+                ctx: {
+                    req: {
+                        url: '/',
+                        headers: { 'accept-language': 'en-US' },
+                    },
                 },
+                Component,
+            });
+
+            expect(initialProps1.nextIntlInitialData).toEqual({
+                localeId: locales[0].id,
+                messages: messages[locales[0].id],
             });
 
             const initialProps2 = await EnhancedMyApp.getInitialProps({
                 ctx: {
                     req: {
+                        url: '/',
                         headers: { 'accept-language': 'pt-PT' },
                     },
                 },
                 Component,
             });
 
-            expect(initialProps2.nextIntlProviderProps).toEqual({
-                initialData: {
-                    localeId: locales[1].id,
-                    messages: messages[locales[1].id],
+            expect(initialProps2.nextIntlInitialData).toEqual({
+                localeId: locales[1].id,
+                messages: messages[locales[1].id],
+            });
+        });
+
+        it('should only inject locale in the page context on data requests', async () => {
+            const policies = [
+                { match: (locales, ctx) => ctx.req?.headers['accept-language'] ?? locales[0].id },
+            ];
+
+            const MyApp = () => null;
+            const EnhancedMyApp = withNextIntlSetup({ locales, policies })(MyApp);
+
+            const appCtx = {
+                ctx: {
+                    req: {
+                        url: '/index.json',
+                        headers: { 'accept-language': 'pt-PT' },
+                    },
                 },
+                Component,
+            };
+
+            const initialProps = await EnhancedMyApp.getInitialProps(appCtx);
+
+            expect(appCtx.ctx.locale).toEqual(locales[1]);
+            expect(initialProps).toEqual({
+                pageProps: {},
             });
         });
     });
@@ -134,7 +160,7 @@ describe('getInitialProps', () => {
     describe('on CS', () => {
         it('should inject new locale into the page context if it changed', async () => {
             let changeLocale;
-            const appContext = { ctx: {}, Component };
+            const appCtx = { ctx: {}, Component };
 
             const MyApp = () => {
                 const nextIntl = useContext(NextIntlContext);
@@ -146,59 +172,55 @@ describe('getInitialProps', () => {
 
             const EnhancedMyApp = withNextIntlSetup({ locales, policies })(MyApp);
 
-            const nextIntlProviderProps = {
-                initialData: {
-                    localeId: locales[0].id,
-                    messages: messages[locales[0].id],
-                },
+            const nextIntlInitialData = {
+                localeId: locales[0].id,
+                messages: messages[locales[0].id],
             };
 
             render(
-                <EnhancedMyApp nextIntlProviderProps={ nextIntlProviderProps } />,
+                <EnhancedMyApp nextIntlInitialData={ nextIntlInitialData } />,
             );
 
             await changeLocale(locales[1].id);
 
-            await EnhancedMyApp.getInitialProps(appContext);
+            await EnhancedMyApp.getInitialProps(appCtx);
 
-            expect(appContext.ctx.locale).toEqual(locales[1]);
+            expect(appCtx.ctx.locale).toEqual(locales[1]);
         });
 
-        it('should cache nextIntlProviderProps', async () => {
-            const appContext1 = { ctx: {}, Component };
-            const appContext2 = { ctx: {}, Component };
+        it('should cache nextIntlInitialData', async () => {
+            const appCtx1 = { ctx: {}, Component };
+            const appCtx2 = { ctx: {}, Component };
 
             const MyApp = () => <FormattedMessage id="apple" />;
             const EnhancedMyApp = withNextIntlSetup({ locales, policies })(MyApp);
 
-            const initialProps1 = await EnhancedMyApp.getInitialProps(appContext1);
-            const initialProps2 = await EnhancedMyApp.getInitialProps(appContext2);
+            const initialProps1 = await EnhancedMyApp.getInitialProps(appCtx1);
+            const initialProps2 = await EnhancedMyApp.getInitialProps(appCtx2);
 
-            expect(initialProps1.nextIntlProviderProps).toBe(initialProps2.nextIntlProviderProps);
-            expect(appContext1.ctx.locale).toBe(appContext2.ctx.locale);
+            expect(initialProps1.nextIntlInitialData).toBe(initialProps2.nextIntlInitialData);
+            expect(appCtx1.ctx.locale).toBe(appCtx2.ctx.locale);
         });
 
-        it('should build nextIntlProviderProps based on the manager state', async () => {
-            const appContext = { ctx: {}, Component };
+        it('should build nextIntlInitialData based on the manager state', async () => {
+            const appCtx = { ctx: {}, Component };
 
             const MyApp = () => <FormattedMessage id="apple" />;
             const EnhancedMyApp = withNextIntlSetup({ locales, policies })(MyApp);
 
-            const nextIntlProviderProps = {
-                initialData: {
-                    localeId: locales[1].id,
-                    messages: messages[locales[1].id],
-                },
+            const nextIntlInitialData = {
+                localeId: locales[1].id,
+                messages: messages[locales[1].id],
             };
 
             render(
-                <EnhancedMyApp nextIntlProviderProps={ nextIntlProviderProps } />,
+                <EnhancedMyApp nextIntlInitialData={ nextIntlInitialData } />,
             );
 
-            const initialProps = await EnhancedMyApp.getInitialProps(appContext);
+            const initialProps = await EnhancedMyApp.getInitialProps(appCtx);
 
-            expect(initialProps.nextIntlProviderProps).toEqual(nextIntlProviderProps);
-            expect(appContext.ctx.locale).toBe(locales[1]);
+            expect(initialProps.nextIntlInitialData).toEqual(nextIntlInitialData);
+            expect(appCtx.ctx.locale).toBe(locales[1]);
         });
     });
 });
@@ -207,18 +229,16 @@ it('should setup NextIntlProvider', async () => {
     const MyApp = () => <FormattedMessage id="apple" />;
     const EnhancedMyApp = withNextIntlSetup({ locales, policies })(MyApp);
 
-    const nextIntlProviderProps = {
-        initialData: {
-            localeId: locales[1].id,
-            messages: messages[locales[1].id],
-        },
+    const nextIntlInitialData = {
+        localeId: locales[1].id,
+        messages: messages[locales[1].id],
     };
 
     const { queryByText } = render(
-        <EnhancedMyApp nextIntlProviderProps={ nextIntlProviderProps } />,
+        <EnhancedMyApp nextIntlInitialData={ nextIntlInitialData } />,
     );
 
-    const appleMessage = messages[nextIntlProviderProps.initialData.localeId].apple;
+    const appleMessage = messages[nextIntlInitialData.localeId].apple;
 
     expect(queryByText(appleMessage)).toBeTruthy();
 });
@@ -227,15 +247,13 @@ it('should spread any other props to the app component', async () => {
     const MyApp = ({ foo }) => <div>{ foo }</div>; // eslint-disable-line react/prop-types
     const EnhancedMyApp = withNextIntlSetup({ locales, policies })(MyApp);
 
-    const nextIntlProviderProps = {
-        initialData: {
-            localeId: locales[0].id,
-            messages: messages[locales[0].id],
-        },
+    const nextIntlInitialData = {
+        localeId: locales[0].id,
+        messages: messages[locales[0].id],
     };
 
     const { queryByText } = render(
-        <EnhancedMyApp nextIntlProviderProps={ nextIntlProviderProps } foo="bar" />,
+        <EnhancedMyApp nextIntlInitialData={ nextIntlInitialData } foo="bar" />,
     );
 
     expect(queryByText('bar')).toBeTruthy();

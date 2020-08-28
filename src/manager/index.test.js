@@ -1,6 +1,6 @@
 import pDelay from 'delay';
 import createPGroup from './util/p-group';
-import createManager, { getInitialData } from '.';
+import createManager, { getInitialData, matchLocale } from '.';
 
 jest.mock('./util/p-group', () => jest.fn(() => ({
     wait: jest.fn(),
@@ -59,6 +59,45 @@ describe('getInitialData()', () => {
             localeId: locales[1].id,
             messages: messages[locales[1].id],
         });
+    });
+});
+
+describe('matchLocale()', () => {
+    it('should match the correct locale', async () => {
+        const policies = [
+            { match: jest.fn(() => locales[0].id) },
+            { match: jest.fn(() => locales[1].id) },
+        ];
+
+        const initialData = {
+            localeId: locales[1].id,
+            messages: messages[locales[1].id],
+        };
+
+        const locale = matchLocale(locales, policies, initialData);
+
+        expect(locale).toBe(locales[0]);
+
+        expect(policies[0].match).toHaveBeenCalledTimes(1);
+        expect(policies[1].match).toHaveBeenCalledTimes(0);
+    });
+
+    it('should throw if locale does not exist', () => {
+        const policies = [
+            { match: jest.fn(() => 'it-IT') },
+        ];
+
+        expect(() => matchLocale(locales, policies))
+            .toThrow('Unknown locale id: it-IT');
+    });
+
+    it('should fail if none of the policies matched', async () => {
+        const policies = [
+            { match: () => null, watch: jest.fn() },
+        ];
+
+        expect(() => matchLocale(locales, policies))
+            .toThrow('None of the policies matched a locale.. did you forgot to include the default policy?');
     });
 });
 

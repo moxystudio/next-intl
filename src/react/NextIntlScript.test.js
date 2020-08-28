@@ -20,7 +20,7 @@ it('should render a script tag with conditional loading of the polyfill correctl
     expect(script.innerHTML).toMatchSnapshot();
 });
 
-it('should fail if unable to find polyfill chunk', () => {
+it('should throw if unable to find polyfill chunk', () => {
     delete global.__NEXT_INTL_POLYFILL_URL__;
 
     jest.spyOn(console, 'error').mockImplementation(() => {});

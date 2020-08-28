@@ -66,6 +66,8 @@ export const getInitialData = async (locales, policies, ctx) => {
     };
 };
 
+export const matchLocale = match;
+
 const createManager = (locales, policies, initialData) => {
     let locale = findLocaleById(locales, initialData.localeId);
     let messages = initialData.messages;
