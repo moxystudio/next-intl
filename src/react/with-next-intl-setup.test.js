@@ -138,21 +138,43 @@ describe('getInitialProps', () => {
             const MyApp = () => null;
             const EnhancedMyApp = withNextIntlSetup({ locales, policies })(MyApp);
 
-            const appCtx = {
+            let appCtx = {
                 ctx: {
                     req: {
-                        url: '/index.json',
+                        url: '/_next/data/develoment/index.json',
                         headers: { 'accept-language': 'pt-PT' },
                     },
                 },
                 Component,
             };
 
-            const initialProps = await EnhancedMyApp.getInitialProps(appCtx);
+            let initialProps = await EnhancedMyApp.getInitialProps(appCtx);
 
             expect(appCtx.ctx.locale).toEqual(locales[1]);
             expect(initialProps).toEqual({
                 pageProps: {},
+            });
+
+            // Test JSON from webpack hot updates; it should behave like a normal request.
+            appCtx = {
+                ctx: {
+                    req: {
+                        url: '/_next/webpack/xxxx.hot-update.json',
+                        headers: { 'accept-language': 'pt-PT' },
+                    },
+                },
+                Component,
+            };
+
+            initialProps = await EnhancedMyApp.getInitialProps(appCtx);
+
+            expect(appCtx.ctx).toHaveProperty('locale');
+            expect(initialProps).toEqual({
+                pageProps: {},
+                nextIntlInitialData: {
+                    localeId: locales[1].id,
+                    messages: messages[locales[1].id],
+                },
             });
         });
     });

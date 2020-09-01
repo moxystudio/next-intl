@@ -42,7 +42,7 @@ const withNextIntlSetup = (config) => (WrappedApp) => {
 
         static async getInitialProps(appCtx) {
             let nextIntlInitialData;
-            const isDataRequest = appCtx.ctx.req?.url.endsWith('.json') ?? false;
+            const isDataRequest = /^\/_next\/data\/.+\.json$/.test(appCtx.ctx.req?.url) ?? false;
 
             // If the request is a data request (e.g.: originated from navigating to a page getServerSideProps from the client-side),
             // then we skip getting the initialData completely, as it will increase latency and payload.
