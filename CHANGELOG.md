@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.2.1](https://github.com/moxystudio/next-intl/compare/v2.2.0...v2.2.1) (2020-09-01)
+
+
+### Bug Fixes
+
+* fix hot-update json being recognized as a data request ([#17](https://github.com/moxystudio/next-intl/issues/17)) ([ab62674](https://github.com/moxystudio/next-intl/commit/ab62674b12387d0d342ed554c87727df061caea0))
+
 ## [2.2.0](https://github.com/moxystudio/next-intl/compare/v2.1.1...v2.2.0) (2020-08-28)
 
 
