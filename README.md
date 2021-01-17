@@ -37,8 +37,6 @@ const withNextIntl = require('@moxy/next-intl/plugin');
 module.exports = withNextIntl()({ ...nextConfig });
 ```
 
-This plugin will make some [modifications](src/plugin.js) to your webpack config to circuvent a few issues related to `jsdom`, which is a runtime dependency of `react-intl` for the server.
-
 #### 2. Create a root folder named `intl` with the following structure:
 
 ```
