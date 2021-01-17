@@ -77,7 +77,7 @@ export default class NextIntlWebpackPlugin {
             const polyfillFile = manifestJson['@formatjs/intl-pluralrules/polyfill-locales']?.[0]?.file;
 
             if (!polyfillFile) {
-                throw new Error(`Could not find intl-polyfill chunk in ${this.manifestPath}, did you forgot to wrap your app with 'withNextIntlSetup'?'`);
+                throw new Error(`Could not find intl-polyfill chunk in ${this.manifestPath}, did you forgot to wrap your app with 'withNextIntlSetup'?`);
             }
 
             this.polyfillUrl = `${this.assetPrefix}/_next/${polyfillFile}`;
