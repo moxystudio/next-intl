@@ -3,14 +3,23 @@ import { render } from '@testing-library/react';
 import NextIntlScript from './NextIntlScript';
 
 beforeEach(() => {
-    global.__NEXT_INTL_POLYFILL_URL__ = 'intl-polyfill.js';
+    global.__NEXT_INTL_POLYFILLS__ = [
+        {
+            asset: 'intl-polyfill-1.js',
+            shouldPolyfill: 'exports.shouldPolyfill = () => true',
+        },
+        {
+            asset: 'intl-polyfill-2.js',
+            shouldPolyfill: 'exports.shouldPolyfill = () => false',
+        },
+    ];
 });
 
 afterEach(() => {
     console.error.mockRestore?.();
 });
 
-it('should render a script tag with conditional loading of the polyfill correctly', () => {
+it('should render a script tag with conditional loading for each polyfill correctly', () => {
     const { container } = render(
         <NextIntlScript />,
     );
@@ -21,7 +30,7 @@ it('should render a script tag with conditional loading of the polyfill correctl
 });
 
 it('should throw if unable to find polyfill chunk', () => {
-    delete global.__NEXT_INTL_POLYFILL_URL__;
+    delete global.__NEXT_INTL_POLYFILLS__;
 
     jest.spyOn(console, 'error').mockImplementation(() => {});
 
@@ -29,5 +38,5 @@ it('should throw if unable to find polyfill chunk', () => {
         render(
             <NextIntlScript />,
         );
-    }).toThrow(new Error('Could not locale the polyfill URL, did you forgot to enable the plugin in the next.config.js file?'));
+    }).toThrow(new Error('Could not locale polyfills data, did you forgot to enable the plugin in the next.config.js file?'));
 });

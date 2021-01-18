@@ -1,3 +1,3 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`should render a script tag with conditional loading of the polyfill correctly 1`] = `"(function(){if(!Intl.PluralRules||!Intl.RelativeTimeFormat){var e=document.currentScript,t=document.createElement(\\"script\\");t.src=\\"intl-polyfill.js\\",e.parentNode.insertBefore(t,e.nextSibling)}})();"`;
+exports[`should render a script tag with conditional loading for each polyfill correctly 1`] = `"!function(e){if(new Function(\\"var exports={};\\"+e.shouldPolyfill+\\"return shouldPolyfill()\\")()){var n=document.currentScript,t=document.createElement(\\"script\\");t.src=e.asset,n.parentNode.insertBefore(t,n.nextSibling)}}({\\"asset\\":\\"intl-polyfill-1.js\\",\\"shouldPolyfill\\":\\"exports.shouldPolyfill = () => true\\"})"`;

@@ -44,6 +44,7 @@
     "url": "git@github.com:moxystudio/next-intl.git"
   },
   "dependencies": {
+    "@formatjs/intl-displaynames": "^4.0.4",
     "@formatjs/intl-locale": "^2.4.13",
     "@formatjs/intl-pluralrules": "^4.0.5",
     "@formatjs/intl-relativetimeformat": "^8.0.3",
@@ -53,6 +54,7 @@
     "p-defer": "^3.0.0",
     "pico-signals": "^1.0.0",
     "prop-types": "^15.7.2",
+    "terser": "^5.5.1",
     "universal-cookie": "^4.0.3",
     "webpack-sources": "^2.2.0"
   },
