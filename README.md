@@ -23,7 +23,7 @@ Library to integrate [`react-intl`](https://www.npmjs.com/package/react-intl) wi
 $ npm install --save @moxy/next-intl react-intl
 ```
 
-All the polyfilling will be taken care by this library automatically, so that you don't need to worry about `react-intl` [runtime requirements](https://github.com/formatjs/react-intl/blob/master/docs/Getting-Started.md#runtime-requirements).
+All the polyfilling will be taken care by this library automatically, so that you don't need to worry about `react-intl` [runtime requirements](https://formatjs.io/docs/guides/runtime-requirements).
 
 > ℹ️ If you are running Node.js `< 13.1.0`, you must also install `full-icu` and start node with [`--icu-data-dir=node_modules/full-icu`](https://github.com/zeit/next.js/blob/5e6f79117fae59ec3a6a3260808f611862c53f0a/examples/with-react-intl/package.json#L5) or use `NODE_ICU_DATA=node_modules/full-icu`.
 

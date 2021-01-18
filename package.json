@@ -44,8 +44,9 @@
     "url": "git@github.com:moxystudio/next-intl.git"
   },
   "dependencies": {
-    "@formatjs/intl-pluralrules": "^3.2.5",
-    "@formatjs/intl-relativetimeformat": "^7.0.0",
+    "@formatjs/intl-locale": "^2.4.13",
+    "@formatjs/intl-pluralrules": "^4.0.5",
+    "@formatjs/intl-relativetimeformat": "^8.0.3",
     "accept-language-parser": "^1.5.0",
     "hoist-non-react-statics": "^3.3.1",
     "p-cancelable": "^2.0.0",
@@ -53,18 +54,18 @@
     "pico-signals": "^1.0.0",
     "prop-types": "^15.7.2",
     "universal-cookie": "^4.0.3",
-    "webpack-sources": "^1.4.3"
+    "webpack-sources": "^2.2.0"
   },
   "peerDependencies": {
     "react": "^16.8.0",
     "react-intl": ">=4.1.0 <6",
-    "next": ">=8 <=9"
+    "next": ">=8 <=10"
   },
   "devDependencies": {
     "@babel/cli": "^7.6.4",
     "@babel/core": "^7.6.4",
-    "@commitlint/cli": "^9.1.2",
-    "@commitlint/config-conventional": "^9.1.1",
+    "@commitlint/cli": "^11.0.0",
+    "@commitlint/config-conventional": "^11.0.0",
     "@moxy/babel-preset": "^3.2.4",
     "@moxy/eslint-config-babel": "^13.0.0",
     "@moxy/eslint-config-base": "^13.0.0",
@@ -73,7 +74,7 @@
     "@moxy/jest-config-base": "^5.0.0",
     "@moxy/jest-config-testing-library": "^5.1.0",
     "@moxy/jest-config-web": "^5.0.0",
-    "@testing-library/react": "^10.4.8",
+    "@testing-library/react": "^11.2.3",
     "cross-env": "^7.0.2",
     "delay": "^4.3.0",
     "eslint": "^7.4.0",
@@ -81,7 +82,7 @@
     "husky": "^4.0.10",
     "jest": "^26.0.0",
     "lint-staged": "^10.0.7",
-    "next": "^9.3.4",
+    "next": "^10.0.5",
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "react-intl": "^5.4.6",
