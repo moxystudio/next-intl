@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.4.0](https://github.com/moxystudio/next-intl/compare/v2.3.0...v2.4.0) (2021-01-18)
+
+
+### Features
+
+* load polyfills individually if needed ([bc1fba4](https://github.com/moxystudio/next-intl/commit/bc1fba4a69329597556757499373eb2e38d9b103))
+
 ## [2.3.0](https://github.com/moxystudio/next-intl/compare/v2.2.1...v2.3.0) (2021-01-18)
 
 
