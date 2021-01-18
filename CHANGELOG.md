@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.3.0](https://github.com/moxystudio/next-intl/compare/v2.2.1...v2.3.0) (2021-01-18)
+
+
+### Features
+
+* next 10 compat ([041b25e](https://github.com/moxystudio/next-intl/commit/041b25e07f772d2230e55e17793225eccea2c7af))
+
+
+### Bug Fixes
+
+* fix error message extra quote ([b58e76a](https://github.com/moxystudio/next-intl/commit/b58e76a4e0788d4e4c64838155ebd5455ee2c210))
+
 ### [2.2.1](https://github.com/moxystudio/next-intl/compare/v2.2.0...v2.2.1) (2020-09-01)
 
 
