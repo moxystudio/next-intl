@@ -1,13 +1,10 @@
-import * as exports from '.';
+import withIntlApp from './with-intl-app';
+import getIntlProps from './intl-props';
+import * as api from '.';
 
-it('should export all functionality', () => {
-    expect(exports).toHaveProperty('NextIntlScript');
-    expect(exports).toHaveProperty('NextIntlProvider');
-    expect(exports).toHaveProperty('NextIntlConsumer');
-    expect(exports).toHaveProperty('useNextIntl');
-    expect(exports).toHaveProperty('withNextIntl');
-    expect(exports).toHaveProperty('withNextIntlSetup');
-    expect(exports).toHaveProperty('acceptLanguagePolicy');
-    expect(exports).toHaveProperty('cookiePolicy');
-    expect(exports).toHaveProperty('defaultPolicy');
+it('should export the correct API', () => {
+    expect(api).toEqual({
+        withIntlApp,
+        getIntlProps,
+    });
 });

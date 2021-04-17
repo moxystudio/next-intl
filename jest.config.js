@@ -8,4 +8,16 @@ module.exports = compose(
     baseConfig(),
     withWeb(),
     withRTL(),
+    (jestConfig) => ({
+        ...jestConfig,
+        globals: {
+            ...jestConfig.globals,
+            __NEXT_DATA__: {
+                locale: 'en',
+                props: {
+                    pageProps: {},
+                },
+            },
+        },
+    }),
 );
