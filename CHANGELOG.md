@@ -2,6 +2,19 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0](https://github.com/moxystudio/next-intl/compare/v2.4.1...v3.0.0) (2021-04-17)
+
+
+### ⚠ BREAKING CHANGES
+
+* The setup has changed, please follow the new guide.
+* Polyfills are not automatically loaded anymore.
+* Next.js >= v10 is now required.
+
+### Features
+
+* upgrade to use Next.js new i18n capabilities ([1e572ca](https://github.com/moxystudio/next-intl/commit/1e572ca6b67b61188ddf5a7a2148bb4f16829722))
+
 ### [2.4.1](https://github.com/moxystudio/next-intl/compare/v2.4.0...v2.4.1) (2021-03-23)
 
 ## [2.4.0](https://github.com/moxystudio/next-intl/compare/v2.3.0...v2.4.0) (2021-01-18)
