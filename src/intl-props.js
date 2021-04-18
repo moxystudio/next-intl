@@ -1,11 +1,9 @@
-/* global __NEXT_DATA__:true */
-
 // We cache the messages on the client-side to avoid loading messages on every page change.
 const cache = typeof window === 'undefined' ?
     {} :
     {
-        locale: __NEXT_DATA__.locale,
-        messages: __NEXT_DATA__.props.pageProps.intl?.messages,
+        locale: window.__NEXT_DATA__?.locale,
+        messages: window.__NEXT_DATA__?.props.pageProps.intl?.messages,
     };
 
 let localeLoader;
