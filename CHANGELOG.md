@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.0.1](https://github.com/moxystudio/next-intl/compare/v3.0.0...v3.0.1) (2021-04-18)
+
+
+### Bug Fixes
+
+* behave well when rendering _error page ([7f63cad](https://github.com/moxystudio/next-intl/commit/7f63cad28db0239ede7171cd937d50b717484f0d))
+* do not crash if __NEXT_DATA__ is not defined ([7e97277](https://github.com/moxystudio/next-intl/commit/7e97277b33b8fb123671359c150e1cb6e4490d4c))
+
 ## [3.0.0](https://github.com/moxystudio/next-intl/compare/v2.4.1...v3.0.0) (2021-04-17)
 
 
