@@ -14,6 +14,12 @@ export const setLocaleLoader = (loadLocale) => {
     localeLoader = loadLocale;
 };
 
+export const getCachedProps = () => ({
+    intl: {
+        messages: cache.messages ?? {},
+    },
+});
+
 const getIntlProps = async (locale) => {
     let messages;
 
@@ -25,6 +31,10 @@ const getIntlProps = async (locale) => {
         messages = await localeLoader(locale);
     } else if (cache.locale !== locale || !cache.messages) {
         messages = await localeLoader(locale);
+
+        if (process.env.NODE_ENV !== 'production' && !messages) {
+            throw new Error('Expecting loadLocale() to return a messages object');
+        }
 
         cache.locale = locale;
         cache.messages = messages;

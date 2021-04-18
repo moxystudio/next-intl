@@ -67,6 +67,26 @@ it('should error out if page did not use "getIntlProps()"', () => {
     const EnhancedMyApp = withIntlApp(() => ({}))(MyApp);
 
     expect(() => {
-        render(<EnhancedMyApp { ...props } foo="bar" />);
+        render(<EnhancedMyApp { ...props } />);
     }).toThrow(/could not find "intl" prop/i);
+});
+
+it('should use cached props when rendering error pages', () => {
+    const props = {
+        pageProps: {
+            intl: {
+                messages: {
+                    apple: 'Apple',
+                },
+            },
+        },
+    };
+
+    const MyApp = jest.fn(() => <FormattedMessage id="apple" />);
+    const EnhancedMyApp = withIntlApp(() => ({}))(MyApp);
+
+    const { rerender } = render(<EnhancedMyApp { ...props } />);
+
+    rerender(<EnhancedMyApp pageProps={ { statusCode: 500 } } />);
+    rerender(<EnhancedMyApp pageProps={ { statusCode: undefined } } />);
 });

@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import hoistNonReactStatics from 'hoist-non-react-statics';
 import { IntlProvider } from 'react-intl';
 import { useRouter } from 'next/router'; // eslint-disable-line no-restricted-imports
-import { setLocaleLoader } from './intl-props';
+import { setLocaleLoader, getCachedProps } from './intl-props';
 
 const withIntlApp = (loadLocale) => {
     setLocaleLoader(loadLocale);
@@ -14,7 +14,11 @@ const withIntlApp = (loadLocale) => {
             const { locale, defaultLocale } = router;
             const { pageProps: { intl, ...restPageProps }, ...restProps } = props;
 
-            if (process.env.NODE_ENV !== 'production' && !intl) {
+            // When Next.js is rendering the _error page, it doesn't call getStaticProps and friends sometimes..
+            // In those situations, we fallback to the cached props.
+            const finalIntl = ('statusCode' in restPageProps) && !intl ? getCachedProps() : intl;
+
+            if (process.env.NODE_ENV !== 'production' && !finalIntl) {
                 // eslint-disable-next-line max-len
                 throw new Error('Could not find "intl" prop. Did you forget to use "getIntlProps()" inside "getStaticProps()" or "getServerSideProps()" in your page?');
             }
@@ -23,7 +27,7 @@ const withIntlApp = (loadLocale) => {
                 <IntlProvider
                     locale={ locale }
                     defaultLocale={ defaultLocale }
-                    messages={ intl.messages }>
+                    messages={ finalIntl.messages }>
                     <WrappedApp pageProps={ restPageProps } { ...restProps } />
                 </IntlProvider>
             );

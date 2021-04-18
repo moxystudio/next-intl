@@ -17,6 +17,16 @@ it('should throw if no locale loader was set', async () => {
     );
 });
 
+it('should throw if no locale loader returns nullish', async () => {
+    const { default: getIntlProps, setLocaleLoader } = require('./intl-props');
+
+    setLocaleLoader(() => null);
+
+    await expect(getIntlProps('en')).rejects.toEqual(
+        new Error('Expecting loadLocale() to return a messages object'),
+    );
+});
+
 it('should call locale loader and return an object with a "intl" key', async () => {
     const { default: getIntlProps, setLocaleLoader } = require('./intl-props');
 
