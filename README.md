@@ -137,8 +137,6 @@ export const getServerSideProps = async ({ locale }) => {
 
 > ℹ️ If you are using `getServerSideProps()`, then it works the same as the examples that use `getStaticProps()`.
 
-> ℹ️ Unfortunately, there's currently no other solution than having to use `getIntlProps()` in all pages. This may change in the future, once Next.js supports `getStaticProps()` and `getServerSideProps()` in a custom App.
-
 ## FAQ
 
 ### How can I use this `getIntlProps()` in my page's `getInitialProps()`?
@@ -188,7 +186,7 @@ export default MyApp;
 
 ### I don't want to repeat `getIntlProps()` in all my page's.
 
-In you can `getIntlProps()` once in your `pages/_app.js`, like so:
+You can `getIntlProps()` once in your `pages/_app.js`, like so:
 
 ```js
 // pages/_app.js
@@ -213,7 +211,7 @@ export default MyApp;
 
 > ⚠️ Adding `getInitialProps()` to your App will disable Automatic Static Optimization in pages without Static Generation.
 
-### How do I load polyfills?
+### How do I load `intl` polyfills?
 
 In previous versions of this library, all polyfills were automatically downloaded. This is no longer the case. However, you may load any polyfills and locale data inside the `loadLocale()` function.
 
