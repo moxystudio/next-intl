@@ -139,7 +139,81 @@ export const getServerSideProps = async ({ locale }) => {
 
 > ℹ️ Unfortunately, there's currently no other solution than having to use `getIntlProps()` in all pages. This may change in the future, once Next.js supports `getStaticProps()` and `getServerSideProps()` in a custom App.
 
-## Polyfills
+## FAQ
+
+### How can I use this `getIntlProps()` in my page's `getInitialProps()`?
+
+```js
+// pages/index.js
+import React from 'react';
+import { getIntlProps } from '@moxy/next-intl';
+
+const Home = () => (
+    <main>
+        <FormattedMessage id="hello" />
+    </main>
+);
+
+Home.getInitialProps = async ({ locale }) => ({
+    ...await getIntlProps(locale),
+});
+
+export default Home;
+```
+
+However, the `locale` parameter will be undefined in the `getInitialProps()` function above because Next.js doesn't pass it as of now, but there's an [open pull-request](https://github.com/vercel/next.js/pull/21930) to resolve it.
+
+To circumvent this, you must override `pages/_app.js` like so:
+
+```js
+// pages/_app.js
+import App from 'next/app';
+
+const MyApp = (props) => <App { ...props } />;
+
+MyApp.getInitialProps = async (appCtx) => {
+    appCtx.ctx.locale = appCtx.router.locale;
+    appCtx.ctx.locales = appCtx.router.locales;
+    appCtx.ctx.defaultLocale = appCtx.router.defaultLocale;
+
+    const appProps = await App.getInitialProps(appCtx);
+
+    return appProps;
+};
+
+export default MyApp;
+```
+
+> ⚠️ Adding `getInitialProps()` to your App will disable Automatic Static Optimization in pages without Static Generation.
+
+### I don't want to repeat `getIntlProps()` in all my page's.
+
+In you can `getIntlProps()` once in your `pages/_app.js`, like so:
+
+```js
+// pages/_app.js
+import App from 'next/app';
+
+const MyApp = (props) => <App { ...props } />;
+
+MyApp.getInitialProps = async (appCtx) => {
+    const [intlProps, appProps] = await Promise.all([
+        getIntlProps(appCtx.router.locale),
+        App.getInitialProps(appCtx),
+    ]);
+
+    return {
+        ...intlProps,
+        ...appProps,
+    };
+};
+
+export default MyApp;
+```
+
+> ⚠️ Adding `getInitialProps()` to your App will disable Automatic Static Optimization in pages without Static Generation.
+
+### How do I load polyfills?
 
 In previous versions of this library, all polyfills were automatically downloaded. This is no longer the case. However, you may load any polyfills and locale data inside the `loadLocale()` function.
 

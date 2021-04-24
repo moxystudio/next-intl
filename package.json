@@ -37,8 +37,7 @@
     "url": "git@github.com:moxystudio/next-intl.git"
   },
   "dependencies": {
-    "hoist-non-react-statics": "^3.3.1",
-    "prop-types": "^15.7.2"
+    "hoist-non-react-statics": "^3.3.1"
   },
   "peerDependencies": {
     "next": "^10",

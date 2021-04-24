@@ -1,98 +1,241 @@
+import React from 'react';
+import { useRouter } from 'next/router';
+import { render } from '@testing-library/react';
+import { getIntlProps, useIntlProps, setLocaleLoader, clearCache } from './intl-props';
+
+jest.mock('next/router', () => ({
+    useRouter: jest.fn(),
+}));
+
+jest.spyOn(console, 'error').mockImplementation(() => {});
+
 beforeEach(() => {
     jest.resetModules();
 
-    global.__NEXT_DATA__ = {
+    clearCache();
+
+    useRouter.mockImplementation(() => ({
         locale: 'en',
-        props: {
-            pageProps: {},
-        },
-    };
+        defaultLocale: 'en',
+    }));
 });
 
-it('should throw if no locale loader was set', async () => {
-    const { default: getIntlProps } = require('./intl-props');
+describe('getIntlProps()', () => {
+    it('should throw if no locale loader was set', async () => {
+        await expect(getIntlProps('en')).rejects.toEqual(
+            new Error('No loadLocale() function configured. Did you forget to wrap your app using withIntlApp()?'),
+        );
+    });
 
-    await expect(getIntlProps('en')).rejects.toEqual(
-        new Error('No loadLocale() function configured. Did you forget to wrap your app using withIntlApp()?'),
-    );
-});
+    it('should throw if no locale loader returns nullish', async () => {
+        setLocaleLoader(() => null);
 
-it('should throw if no locale loader returns nullish', async () => {
-    const { default: getIntlProps, setLocaleLoader } = require('./intl-props');
+        await expect(getIntlProps('en')).rejects.toEqual(
+            new Error('Expecting loadLocale() to return a messages object'),
+        );
+    });
 
-    setLocaleLoader(() => null);
+    it('should call locale loader and return an object with a "intl" key', async () => {
+        const loadLocale = jest.fn(async () => ({ foo: 'bar' }));
 
-    await expect(getIntlProps('en')).rejects.toEqual(
-        new Error('Expecting loadLocale() to return a messages object'),
-    );
-});
+        setLocaleLoader(loadLocale);
 
-it('should call locale loader and return an object with a "intl" key', async () => {
-    const { default: getIntlProps, setLocaleLoader } = require('./intl-props');
+        const props = await getIntlProps('en');
 
-    const loadLocale = jest.fn(async () => ({ foo: 'bar' }));
+        expect(loadLocale).toHaveBeenCalledTimes(1);
+        expect(loadLocale).toHaveBeenCalledWith('en');
 
-    setLocaleLoader(loadLocale);
+        expect(props).toEqual({
+            intl: {
+                messages: { foo: 'bar' },
+            },
+        });
+    });
 
-    const messages = await getIntlProps('en');
+    it('should use cache if possible on client-side', async () => {
+        const loadLocale = jest.fn(async () => ({ apple: 'Maça' }));
 
-    expect(loadLocale).toHaveBeenCalledTimes(1);
-    expect(loadLocale).toHaveBeenCalledWith('en');
+        setLocaleLoader(loadLocale);
 
-    expect(messages).toEqual({
-        intl: {
-            messages: { foo: 'bar' },
-        },
+        const MyComponent = (props) => {
+            useIntlProps(props);
+
+            return 'foo';
+        };
+
+        const props1 = await getIntlProps('en');
+
+        render(
+            <MyComponent pageProps={ {
+                intl: {
+                    messages: {
+                        apple: 'Maça',
+                    },
+                },
+            } } />,
+        );
+
+        const props2 = await getIntlProps('en');
+
+        expect(loadLocale).toHaveBeenCalledTimes(1);
+        expect(loadLocale).toHaveBeenCalledWith('en');
+
+        expect(props1).toEqual({
+            intl: {
+                messages: {
+                    apple: 'Maça',
+                },
+            },
+        });
+        expect(props2).toEqual({
+            intl: {
+                messages: {
+                    apple: 'Maça',
+                },
+            },
+        });
     });
 });
 
-describe('client-side', () => {
-    it('should hydrate from __NEXT_DATA__', async () => {
-        global.__NEXT_DATA__ = {
-            locale: 'en',
-            props: {
-                pageProps: {
-                    intl: {
-                        messages: { foo: 'baz' },
+describe('useIntlProps()', () => {
+    it('should return the correct data (when intl is in pageProps)', async () => {
+        const props = {
+            foo: 'bar',
+            pageProps: {
+                foz: 'baz',
+                intl: {
+                    messages: {
+                        apple: 'Apple',
                     },
                 },
             },
         };
 
-        const { default: getIntlProps, setLocaleLoader } = require('./intl-props');
+        const data = [];
+        const MyComponent = (props) => {
+            const result = useIntlProps(props);
 
-        const loadLocale = jest.fn(async () => ({ foo: 'bar' }));
+            data.push(result);
 
-        setLocaleLoader(loadLocale);
+            return 'foo';
+        };
 
-        const messages = await getIntlProps('en');
+        render(<MyComponent { ...props } />);
 
-        expect(loadLocale).toHaveBeenCalledTimes(0);
-
-        expect(messages).toEqual({
-            intl: {
-                messages: { foo: 'baz' },
+        expect(data).toHaveLength(1);
+        expect(data[0]).toEqual({
+            locale: 'en',
+            defaultLocale: 'en',
+            messages: {
+                apple: 'Apple',
+            },
+            modifiedProps: {
+                foo: 'bar',
+                pageProps: {
+                    foz: 'baz',
+                },
             },
         });
     });
 
-    it('should cache messages', async () => {
-        const { default: getIntlProps, setLocaleLoader } = require('./intl-props');
-
-        const loadLocale = jest.fn(async () => ({ foo: 'bar' }));
-
-        setLocaleLoader(loadLocale);
-
-        const messages = await getIntlProps('pt');
-        const messages2 = await getIntlProps('pt');
-
-        expect(loadLocale).toHaveBeenCalledTimes(1);
-
-        expect(messages).toEqual({
+    it('should return the correct data (when intl is in props)', async () => {
+        const props = {
+            foo: 'bar',
             intl: {
-                messages: { foo: 'bar' },
+                messages: {
+                    apple: 'Apple',
+                },
+            },
+            pageProps: {
+                foz: 'baz',
+            },
+        };
+
+        const data = [];
+        const MyComponent = (props) => {
+            const result = useIntlProps(props);
+
+            data.push(result);
+
+            return 'foo';
+        };
+
+        render(<MyComponent { ...props } />);
+
+        expect(data).toHaveLength(1);
+        expect(data[0]).toEqual({
+            locale: 'en',
+            defaultLocale: 'en',
+            messages: {
+                apple: 'Apple',
+            },
+            modifiedProps: {
+                foo: 'bar',
+                pageProps: {
+                    foz: 'baz',
+                },
             },
         });
-        expect(messages).toEqual(messages2);
+    });
+
+    it('should error out if "intl" was not found in pageProps / props', () => {
+        const props = {
+            pageProps: {},
+        };
+
+        const MyComponent = (props) => {
+            useIntlProps(props);
+
+            return 'foo';
+        };
+
+        expect(() => {
+            render(<MyComponent { ...props } />);
+        }).toThrow(/could not find "intl" prop/i);
+    });
+
+    it('should use cached props when rendering error pages', () => {
+        const props = {
+            pageProps: {
+                intl: {
+                    messages: {
+                        apple: 'Apple',
+                    },
+                },
+            },
+        };
+
+        const data = [];
+        const MyComponent = (props) => {
+            const data_ = useIntlProps(props);
+
+            data.push(data_);
+
+            return 'foo';
+        };
+
+        const err = new Error('foo');
+
+        render(<MyComponent { ...props } />);
+        render(<MyComponent err={ err } />);
+
+        expect(data).toHaveLength(2);
+        expect(data[0]).toEqual({
+            locale: 'en',
+            defaultLocale: 'en',
+            messages: {
+                apple: 'Apple',
+            },
+            modifiedProps: {
+                pageProps: {},
+            },
+        });
+        expect(data[1]).toEqual({
+            ...data[0],
+            modifiedProps: {
+                err,
+                ...data[0].modifiedProps,
+            },
+        });
     });
 });
