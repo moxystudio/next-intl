@@ -184,7 +184,7 @@ export default MyApp;
 
 > ⚠️ Adding `getInitialProps()` to your App will disable Automatic Static Optimization in pages without Static Generation.
 
-### I don't want to repeat `getIntlProps()` in all my page's.
+### I don't want to repeat `getIntlProps()` in all my pages.
 
 You can `getIntlProps()` once in your `pages/_app.js`, like so:
 
