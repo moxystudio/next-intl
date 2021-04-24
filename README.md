@@ -56,7 +56,7 @@ The `intl/en.json` file contains the messages for the `en` locale, like so:
 }
 ```
 
-### 3. Wrap your app with `withIntlApp` in `pages/_app.js`:
+### 3. Wrap your app with `withIntlApp()` in `pages/_app.js`:
 
 ```js
 // pages/_app.js
@@ -99,7 +99,7 @@ const loadLocale = async (locale) => {
 export default withIntlApp(loadLocale)(App);
 ```
 
-### 4. Use `getIntlProps` in your pages.
+### 4. Use `getIntlProps()` in your pages.
 
 ```js
 // pages/index.js
