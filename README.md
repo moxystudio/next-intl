@@ -182,9 +182,9 @@ MyApp.getInitialProps = async (appCtx) => {
 export default MyApp;
 ```
 
-> ⚠️ Adding `getInitialProps()` to your App will disable Automatic Static Optimization in pages without Static Generation.
+> ⚠️ Please note that adding `getInitialProps()` to your App will disable Automatic Static Optimization in pages without Static Generation.
 
-### I don't want to repeat `getIntlProps()` in all my pages.
+### How do I avoid repeating `getIntlProps()` in all my pages?
 
 You can `getIntlProps()` once in your `pages/_app.js`, like so:
 
@@ -209,7 +209,7 @@ MyApp.getInitialProps = async (appCtx) => {
 export default MyApp;
 ```
 
-> ⚠️ Adding `getInitialProps()` to your App will disable Automatic Static Optimization in pages without Static Generation.
+> ⚠️ Please note that adding `getInitialProps()` to your App will disable Automatic Static Optimization in pages without Static Generation.
 
 ### How do I load `intl` polyfills?
 
