@@ -186,7 +186,7 @@ export default MyApp;
 
 ### How do I avoid repeating `getIntlProps()` in all my pages?
 
-You can `getIntlProps()` once in your `pages/_app.js`, like so:
+You can use `getIntlProps()` once in your `pages/_app.js`, like so:
 
 ```js
 // pages/_app.js
