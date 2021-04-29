@@ -145,6 +145,7 @@ export const getServerSideProps = async ({ locale }) => {
 // pages/index.js
 import React from 'react';
 import { getIntlProps } from '@moxy/next-intl';
+import { FormattedMessage } from 'react-intl';
 
 const Home = () => (
     <main>
