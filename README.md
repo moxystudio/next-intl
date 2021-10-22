@@ -96,7 +96,7 @@ const loadLocale = async (locale) => {
     return module.default;
 };
 
-export default withIntlApp(loadLocale)(App);
+export default withIntlApp(loadLocale)(MyApp);
 ```
 
 ### 4. Use `getIntlProps()` in your pages.
