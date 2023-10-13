@@ -60,7 +60,7 @@ export const getIntlProps = async (locale) => {
     } else {
         messages = await localeLoader(locale);
 
-        // Hint the user if he forgot to return messages.
+        // Hint to the user if they forgot to return messages.
         if (process.env.NODE_ENV !== 'production' && !messages) {
             throw new Error('Expecting loadLocale() to return a messages object');
         }
